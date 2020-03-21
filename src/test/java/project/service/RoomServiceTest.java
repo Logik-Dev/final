@@ -2,7 +2,6 @@ package project.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -17,12 +16,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import project.exceptions.RoomNotFoundException;
-import project.models.Booking;
-import project.models.Room;
+import project.exceptions.NotFoundException;
+import project.models.entities.Booking;
+import project.models.entities.Room;
 import project.repositories.RoomRepository;
 import project.services.RoomService;
-import project.utils.DateUtils;
 
 @SpringBootTest
 class RoomServiceTest {
@@ -37,14 +35,10 @@ class RoomServiceTest {
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
-		room.setId(1);
+		room.setId(Long.valueOf(1));
 		Booking booking = new Booking();
-		booking.setDates(Set.of(DateUtils.parseDate("01/01/2020")));
-		booking.setStart(DateUtils.parseTime("10:00"));
-		booking.setEnd(DateUtils.parseTime("11:00"));
-		booking.setDuration(1);
 		booking.setRoom(room);
-		room.setBookings(Arrays.asList(booking));
+		room.setBookings(Set.of(booking));
 		
 	}
 
@@ -54,7 +48,7 @@ class RoomServiceTest {
 		when(roomRepository.save(room)).thenReturn(room);
 
 		// act
-		Room result = roomService.save(room, 1);
+		Room result = roomService.save(room, Long.valueOf(1), null);
 
 		// assert
 		assertEquals(1, result.getId());
@@ -63,15 +57,15 @@ class RoomServiceTest {
 	@Test
 	void testFindById() {
 		// arrange
-		when(roomRepository.findById(1)).thenReturn(Optional.of(room));
-		when(roomRepository.findById(2)).thenReturn(Optional.empty());
+		when(roomRepository.findById(Long.valueOf(1))).thenReturn(Optional.of(room));
+		when(roomRepository.findById(Long.valueOf(2))).thenReturn(Optional.empty());
 
 		// act
-		Room result = roomService.findById(1);
+		Room result = roomService.findById(Long.valueOf(1));
 
 		// assert
 		assertEquals(1, result.getId());
-		assertThrows(RoomNotFoundException.class, () -> roomService.findById(2));
+		assertThrows(NotFoundException.class, () -> roomService.findById(Long.valueOf(2)));
 	}
 
 	@Test
@@ -85,7 +79,7 @@ class RoomServiceTest {
 
 		// assert
 		assertEquals(1, result.get(0).getId());
-		assertThrows(RoomNotFoundException.class, () -> roomService.findByCity("unknown"));
+		assertThrows(NotFoundException.class, () -> roomService.findByCity("unknown"));
 
 	}
 
@@ -100,7 +94,7 @@ class RoomServiceTest {
 		// assert
 		assertEquals(1, result.get(0).getId());
 		
-		assertThrows(RoomNotFoundException.class,
+		assertThrows(NotFoundException.class,
 				() -> roomService.findByCityAndDate("nantes", "01/01/2020", "10:00", "11:00")); // -> Heure déjà réservée
 	}
 
@@ -122,12 +116,7 @@ class RoomServiceTest {
 		when(roomRepository.findAll()).thenReturn(new ArrayList<>());
 		
 		// assert
-		assertThrows(RoomNotFoundException.class, () -> roomService.findAll());
-	}
-
-	// TODO refactoring to comment
-	void testGetAverageGrade() {
-		fail("Not yet implemented");
+		assertThrows(NotFoundException.class, () -> roomService.findAll());
 	}
 
 

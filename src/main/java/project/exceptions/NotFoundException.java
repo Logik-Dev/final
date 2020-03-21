@@ -5,10 +5,10 @@ public class NotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public NotFoundException() {
-		super("Aucun résultat");
+		super("Aucun résultat trouvé");
 	}
 	
-	public NotFoundException(String prefix, int id) {
-		super(prefix + " avec l'id " + id + " est introuvable");
+	public NotFoundException(Object id) {
+		super("L'identifiant " + id + " est introuvable");
 	}
 } 

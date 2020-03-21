@@ -1,121 +1,175 @@
 package project.services;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import lombok.RequiredArgsConstructor;
-import project.exceptions.RoomNotFoundException;
-import project.models.Booking;
-import project.models.Room;
-import project.models.User;
+import project.exceptions.ForbiddenException;
+import project.exceptions.InternalException;
+import project.exceptions.NotFoundException;
+import project.models.entities.Booking;
+import project.models.entities.Equipment;
+import project.models.entities.Photo;
+import project.models.entities.Room;
+import project.models.entities.RoomType;
+import project.repositories.EquipmentRepository;
+import project.repositories.PhotoRepository;
 import project.repositories.RoomRepository;
+import project.repositories.RoomTypeRepository;
 import project.utils.DateUtils;
+
 /**
  * Service de gestion des salles.
+ * 
  * @author Cédric Maunier
  *
  */
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoomService {
-	
-	private final RoomRepository roomRepository;
-	
-	private final UserService userService;
-	
-	/**
-	 * Enregistrer une salle.
-	 * @param room la salle concernée.
-	 * @return l'objet Room crée.
-	 */
-	public Room save(Room room, int ownerId) {
-		User owner = userService.findById(ownerId);
-		room.setOwner(owner);
-		return roomRepository.save(room);
-	}
-	
-	public Room update(Room room) {
-		return roomRepository.save(room);
-	}
-	
-	/**
-	 * Rechercher une salle par id.
-	 * @param id un int identifiant la salle recherchée.
-	 * @return l'objet Room recherché.
-	 * @throws RoomNotFoundException si l'id ne correspond à aucune salle.
-	 */
-	public Room findById(int id) throws RoomNotFoundException {
-		return roomRepository.findById(id)
-				.orElseThrow(() -> new RoomNotFoundException(id));
-	}
-	
-	/**
-	 * Trouver les salles qui sont dans la ville passée en paramètre.
-	 * @param city un String qui est le nom de la ville souhaitée.
-	 * @return une liste contenant les salles correspondantes.
-	 * @throws RoomNotFoundException si aucune salle n'est trouvée.
-	 */
-	public List<Room> findByCity(String city) throws RoomNotFoundException{
-		List<Room> rooms = roomRepository.findByCity(city);
-		if(rooms.isEmpty())
-			throw new RoomNotFoundException();
-		return rooms;
 
+	@Autowired
+	private RoomRepository roomRepository;
+
+	@Autowired
+	private PhotoRepository photoRepository;
+
+	@Autowired
+	private RoomTypeRepository roomTypeRepository;
+
+	@Autowired
+	private EquipmentRepository equipmentRepository;
+
+	@Autowired
+	private UserService userService;
+
+	public List<Room> find(String city, String day, String start, String end) {
+		if (city != null) {
+			if (start == null || end == null) {
+				return findByCity(city);
+			} else {
+				return findByCityAndDate(city, day, start, end);
+			}
+		} else {
+			return findAll();
+		}
 	}
-	
-	/**
-	 * Trouver les salles disponible pendant une période et dans une ville données.
-	 * @param city un String qui est le nom de la ville souhaitée.
-	 * @param start un String représentant le début de la reservation.
-	 * @param end un String représentant la fin de la réservation.
-	 * @return une lsite contenant les salles correspondantes.
-	 * @throws RoomNotFoundException si aucune salle n'est trouvée.
-	 */
-	public List<Room> findByCityAndDate(String city, String date, String start, String end) throws RoomNotFoundException{
+
+	public List<Room> findByCity(String city) throws NotFoundException {
+		List<Room> rooms = roomRepository.findByCity(city);
+		if (rooms.isEmpty())
+			throw new NotFoundException();
+		return rooms;
+	}
+
+	public List<Room> findByCityAndDate(String city, String day, String start, String end) throws NotFoundException {
 		List<Room> rooms = this.findByCity(city);
 		List<Room> freeRooms = new ArrayList<>();
-		for(Room room: rooms) {
-			if(isFree(room, DateUtils.parseDate(date), DateUtils.parseTime(start), DateUtils.parseTime(end))) {
+
+		for (Room room : rooms) {
+			if (isFree(room, DateUtils.parseDate(day), DateUtils.parseTime(start), DateUtils.parseTime(end))) {
 				freeRooms.add(room);
 			}
 		}
-		if(freeRooms.isEmpty()) throw new RoomNotFoundException();
+
+		if (freeRooms.isEmpty())
+			throw new NotFoundException();
 		return freeRooms;
 	}
-	
-	/**
-	 * Obtenir la liste de toutes les salles.
-	 * @return une liste contenant les salles trouvées.
-	 * @throws RoomNotFoundException si aucune salle n'est trouvée.
-	 */
-	public List<Room> findAll() throws RoomNotFoundException {
+
+	public List<Room> findAll() throws NotFoundException {
 		List<Room> rooms = roomRepository.findAll();
-		if(rooms.isEmpty()) throw new RoomNotFoundException();
+		if (rooms.isEmpty())
+			throw new NotFoundException();
 		return rooms;
 	}
-	public boolean isFree(Room room, LocalDate date, LocalTime start, LocalTime end) {
-		System.out.println("date recherchée : " + date);
-		for(Booking booking: room.getBookings()) {
-			System.out.print("date réservées: ");
-			booking.getDates().forEach(System.out::print);
-			System.out.print(",");
-			if(booking.getDates().contains(date)) {
 
-				if(start.equals(booking.getStart()) || end.equals(booking.getEnd())){
-					return false;
+	public Room save(Room room, Long ownerId, MultipartFile files[]) {
+		room = setPhotos(room, files);
+		room = setRoomType(room);
+		room = setEquipments(room);
+		room.setOwner(userService.findById(ownerId));
+
+		return roomRepository.save(room);
+	}
+
+	public Room update(Room room, Long ownerId) throws ForbiddenException {
+		if (room.getOwner().getId() != ownerId) {
+			throw new ForbiddenException();
+		}
+		return roomRepository.save(room);
+	}
+
+	public Room findById(Long id) throws NotFoundException {
+		return roomRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
+	}
+
+	public byte[] getPhoto(Long id) {
+		Photo photo = this.photoRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
+		return photo.getFile();
+	}
+
+	public boolean isFree(Room room, LocalDate day, LocalTime start, LocalTime end) {
+		// parcourir les reservations da la salle
+		for (Booking booking : room.getBookings()) {
+
+			// on vérifie que cette journée est disponible
+			if (room.getAvailableDays().contains(day.getDayOfWeek()))
+
+				// si la date est déjà réservée
+				if (booking.getDates().contains(day)) {
+
+					// on vérifie que les heures de début et de fin sont disponibles
+					if (start.equals(booking.getBegin().toLocalTime()) || end.equals(booking.getEnd().toLocalTime())) {
+						return false;
+					} else if (start.isAfter(booking.getBegin().toLocalTime())
+							&& end.isBefore(booking.getEnd().toLocalTime())) {
+						return false;
+					}
 				}
-				else if(start.isAfter(booking.getStart()) && end.isBefore(booking.getEnd())) {
-					return false;
-				}
-			}
 		}
 		return true;
 	}
-	
-	
+
+	private Room setPhotos(Room room, MultipartFile[] files) {
+		Set<Photo> photos = new HashSet<>();
+		for (MultipartFile file : files) {
+			Photo photo = new Photo();
+			try {
+				photo.setFile(file.getBytes());
+				photos.add(photo);
+			} catch (IOException e) {
+				throw new InternalException();
+			}
+		}
+		room.setPhotos(photos);
+		return room;
+	}
+
+	private Room setRoomType(Room room) {
+		RoomType type = roomTypeRepository.findByName(room.getType().getName())
+				.orElseThrow(() -> new NotFoundException(room.getType().getName()));
+		room.setType(type);
+		return room;
+	}
+
+	private Room setEquipments(Room room) {
+		Set<Equipment> equipments = new HashSet<>();
+		for (Equipment equipment : room.getEquipments()) {
+			Equipment e = equipmentRepository.findByName(equipment.getName())
+					.orElseThrow(() -> new NotFoundException(equipment.getName()));
+			equipments.add(e);
+		}
+		room.setEquipments(equipments);
+		return room;
+
+	}
+
 }

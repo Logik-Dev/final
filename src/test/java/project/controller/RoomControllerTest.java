@@ -24,8 +24,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import project.controllers.RoomController;
-import project.exceptions.RoomNotFoundException;
-import project.models.Room;
+import project.exceptions.NotFoundException;
+import project.models.entities.Address;
+import project.models.entities.Room;
 import project.services.RoomService;
 
 @RunWith(SpringRunner.class)
@@ -53,13 +54,15 @@ class RoomControllerTest {
 
 	@BeforeAll
 	static void setUpBeforeClass() {
-		room.setCity("nantes");
+		Address address = new Address();
+		address.setCity("nantes");
+		room.setAddress(address);
 	}
 
 	@Test
 	void testFindByCity() throws Exception {
 		when(roomService.findByCity("nantes")).thenReturn(Arrays.asList(room));
-		when(roomService.findByCity("unknown")).thenThrow(new RoomNotFoundException());
+		when(roomService.findByCity("unknown")).thenThrow(new NotFoundException());
 
 		mvc.perform(get(URL + "/city/nantes")).andExpect(ok).andExpect(matcher);
 
@@ -71,7 +74,7 @@ class RoomControllerTest {
 		when(roomService.findByCityAndDate("nantes", "22/05/2019", "10:00", "11:00"))
 				.thenReturn(Arrays.asList(room));
 		when(roomService.findByCityAndDate("unknown", "22/05/2019","10:00", "11:00"))
-				.thenThrow(new RoomNotFoundException());
+				.thenThrow(new NotFoundException());
 
 		mvc.perform(get(URL + "/city/nantes/date?date=22/05/2019&start=10:00&end=11:00")).andExpect(ok)
 				.andExpect(matcher);
@@ -85,14 +88,14 @@ class RoomControllerTest {
 
 		mvc.perform(get(URL)).andExpect(ok).andExpect(matcher);
 
-		when(roomService.findAll()).thenThrow(new RoomNotFoundException());
+		when(roomService.findAll()).thenThrow(new NotFoundException());
 
 		mvc.perform(get(URL)).andExpect(notFound);
 	}
 
 	@Test
 	void testCreate() throws JsonProcessingException, Exception {
-		when(roomService.save(room, 1)).thenReturn(room);
+		when(roomService.save(room, Long.valueOf(1), null)).thenReturn(room);
 
 		mvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(room)))
 				.andExpect(status().isCreated());
@@ -100,7 +103,7 @@ class RoomControllerTest {
 
 	@Test
 	void testUpdateRoom() throws JsonProcessingException, Exception {
-		when(roomService.update(room)).thenReturn(room);
+		when(roomService.update(room, Long.valueOf(1))).thenReturn(room);
 
 		mvc.perform(put(URL).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(room)))
 				.andExpect(status().isCreated());

@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,32 +16,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.RequiredArgsConstructor;
-import project.models.Booking;
-import project.models.BookingRequest;
+import project.exceptions.ForbiddenException;
+import project.models.entities.Booking;
+import project.models.entities.User;
 import project.services.BookingService;
 
 @RestController
 @RequestMapping("/api/bookings")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@CrossOrigin("http://localhost:4200")
 public class BookingController {
 
-	private final BookingService bookingService;
+	@Autowired
+	private BookingService bookingService;
 
-	@PostMapping()
-	public ResponseEntity<Booking> create(@RequestBody BookingRequest booking) {
-		return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.save(booking));
+	@PostMapping("/rooms/{roomId}")
+	public ResponseEntity<Booking> create(@AuthenticationPrincipal User user, @PathVariable Long roomId,
+			@RequestBody Booking booking) {
+		if (user == null) {
+			throw new ForbiddenException();
+		}
+		return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.save(roomId, booking, user.getId()));
 	}
 
-	@GetMapping()
-	public List<Booking> findByRoom(@RequestParam int roomId) {
+	@GetMapping
+	public List<Booking> findByRoom(@RequestParam Long roomId) {
 		return bookingService.findByRoom(roomId);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<Booking> changeBookingStatus(@PathVariable int id, @RequestParam String status,
-			@RequestParam int userId) {
-		return ResponseEntity.ok(bookingService.changeBookingStatus(id, status, userId));
+	public ResponseEntity<Booking> changeBookingStatus(@PathVariable Long id, @RequestParam String status,
+			@AuthenticationPrincipal User user) {
+		if (user == null)
+			throw new ForbiddenException();
+		return ResponseEntity.ok(bookingService.changeBookingStatus(id, status, user.getId()));
 	}
 
 }

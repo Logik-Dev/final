@@ -1,12 +1,10 @@
-package project.models;
+package project.models.entities;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -14,23 +12,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
+
 @Getter
 @Setter
+@Entity
 @NoArgsConstructor
-public class Photo {
+public class Address {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Long id;
 	
-	private String url;
+	private String label;
 	
-	@Lob
-	@JsonIgnore
-	private byte[] file;
+	private int zipCode;
 	
 	@JsonIgnore
-	@ManyToOne(cascade = CascadeType.MERGE)
+	@OneToOne(mappedBy = "address")
 	private Room room;
 	
+	private double longitude;
+	
+	private double latitude;
+	
+	private String city;
 }

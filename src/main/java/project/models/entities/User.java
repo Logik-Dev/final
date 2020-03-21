@@ -1,17 +1,21 @@
-package project.models;
+package project.models.entities;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.Arrays;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Column;
+import javax.persistence.OneToOne;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import project.models.Role;
 
 @Getter
 @Setter
@@ -34,44 +39,60 @@ public class User implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Long id;
 	
 	private String firstname;
 	
 	private String lastname;
 	
-	@JsonProperty(access=Access.WRITE_ONLY)
+	@OneToOne(cascade = CascadeType.ALL)
+	private Address address;
+	
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
+	
+	private boolean accountNonLocked = true;
 	
 	@Column(unique = true)
 	private String email;
 	
+	@Column(length = 16, columnDefinition = "varchar(16) default 'USER'")
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	private Set<Role> roles = Set.of(Role.USER);
+	
 	@JsonIgnore
 	@OneToMany(mappedBy = "owner")
-	private List<Room> rooms;
+	private Set<Room> rooms;
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "client")
-	private List<Booking> bookings;
+	private Set<Booking> bookings;
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "author")
-	private List<Comment> comments;
+	private Set<Comment> comments;
 
 	@ElementCollection
-	private Set<Integer> bookingNotifications;
+	private Set<Long> bookingNotifications;
 
+	@JsonIgnore
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Arrays.asList(new SimpleGrantedAuthority("ADMIN"));
-
+		Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+		for(Role role: roles) {
+			authorities.add(new SimpleGrantedAuthority(role.toString()));
+		}
+		return authorities;
 	}
 
+	@JsonIgnore
 	@Override
 	public String getUsername() {
 		return email;
 	}
-
+	
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
@@ -79,14 +100,16 @@ public class User implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return accountNonLocked;
 	}
-
+	
+	@JsonIgnore
 	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
 
+	@JsonIgnore
 	@Override
 	public boolean isEnabled() {
 		return true;

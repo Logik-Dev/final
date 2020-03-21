@@ -1,7 +1,9 @@
-package project.models;
+package project.models.entities;
 
-import java.util.List;
+import java.time.DayOfWeek;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -10,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,36 +25,39 @@ import lombok.Setter;
 public class Room {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Long id;
 	
 	private double price;
 	
 	private double size;
 	
-	private String postCode;
-	
-	private String address;
-	
-	@ElementCollection
-	private List<Double> coordinates;
-	
-	private String city;
+	@OneToOne(cascade = CascadeType.ALL)
+	private Address address;
 	
 	private int maxCapacity;
+	
+	@ElementCollection
+	private Set<DayOfWeek> availableDays;
+	
+	@OneToOne(cascade = CascadeType.PERSIST)
+	private RoomType type;
+	
+	@OneToMany(cascade = CascadeType.PERSIST)
+	private Set<Equipment> equipments;
 	
 	@Column(columnDefinition = "integer default 0")
 	private int rating = 0;
 	
-	@OneToMany(mappedBy = "room")
-	private List<Photo> photos;
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
+	private Set<Photo> photos;
 	
 	@ManyToOne
 	private User owner;
 	
 	@OneToMany(mappedBy = "room")
-	private List<Booking> bookings;
+	private Set<Booking> bookings;
 	
 	@OneToMany(mappedBy = "room")
-	private List<Comment> comments;
+	private Set<Comment> comments;
 
 }

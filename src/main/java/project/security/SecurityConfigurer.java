@@ -13,16 +13,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import lombok.RequiredArgsConstructor;
 import project.services.UserService;
 
 @EnableWebSecurity
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
-	private final UserService userDetailsService;
+	@Autowired
+	private UserService userDetailsService;
 	
-	private final JwtRequestFilter jwtRequestFilter;
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
 	
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -32,12 +32,12 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().authorizeRequests()
-				.antMatchers(HttpMethod.GET).hasAuthority("ADMIN")
-				.antMatchers("/api/user/authenticate", "/api/user/signup").permitAll()
+				.antMatchers("/api/users/**", "/api/rooms/**").permitAll()
+				.antMatchers("/api/admin/**").hasAuthority("ADMIN")
+				.antMatchers(HttpMethod.POST, "/api/rooms/**").authenticated()
 				.anyRequest().authenticated()
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-		
 	}
 	
 	@Override
@@ -50,4 +50,5 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	
 }

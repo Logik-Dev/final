@@ -1,122 +1,95 @@
 package project.services;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.Period;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-import project.exceptions.BookingNotFoundException;
-import project.exceptions.UnavailableException;
-import project.models.Booking;
-import project.models.BookingRequest;
+import project.exceptions.ConflictException;
+import project.exceptions.ForbiddenException;
+import project.exceptions.NotFoundException;
 import project.models.BookingStatus;
-import project.models.Room;
-import project.models.User;
+import project.models.entities.Booking;
 import project.repositories.BookingRepository;
-import project.utils.DateUtils;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BookingService {
 
-	private final BookingRepository bookingRepository;
+	@Autowired
+	private BookingRepository bookingRepository;
 
-	private final RoomService roomService;
+	@Autowired
+	private RoomService roomService;
 
-	private final UserService userService;
+	@Autowired
+	private UserService userService;
 
-	public Booking save(BookingRequest bookingRequest) {
-		Booking booking = createAndFillBooking(bookingRequest);
-		return bookingRepository.save(booking);
+	public Booking save(Long roomId, Booking booking, Long clientId) throws ConflictException {
+		// définir le client, la salle et calculer le prix
+		booking.setClient(userService.findById(clientId));
+		booking.setRoom(roomService.findById(roomId));
+		booking.calculatePrice();
 
+		// Vérifier la disponibilité
+		if (!isAvalaible(booking)) {
+			throw new ConflictException("Cette date est déjà réservée");
+		}
+		
+		// enregistrer la réservation pour obtenir l'id
+		Booking savedBooking = bookingRepository.save(booking);
+		
+		// notifier le propriétaire avec l'id de la reservation
+		savedBooking.getRoom().getOwner().getBookingNotifications().add(savedBooking.getId());
+		
+		return bookingRepository.save(savedBooking);
 	}
 
-	public List<Booking> findByRoom(int roomId) throws BookingNotFoundException {
-		Room room = roomService.findById(roomId);
-		List<Booking> bookings = bookingRepository.findByRoom(room);
+	public List<Booking> findByRoom(Long roomId) throws NotFoundException {
+		List<Booking> bookings = bookingRepository.findByRoomId(roomId);
 		if (bookings.isEmpty())
-			throw new BookingNotFoundException();
+			throw new NotFoundException();
 		return bookings;
 
 	}
-	public Booking changeBookingStatus(int id, String status, int userId)  throws BookingNotFoundException {
-		Booking booking = bookingRepository.findById(id)
-				.orElseThrow(() -> new BookingNotFoundException(id));
-		
+
+	public Booking changeBookingStatus(Long id, String status, Long userId) throws NotFoundException, ForbiddenException {
+		// changer le statut de la réservation
+		Booking booking = bookingRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
 		booking.setStatus(BookingStatus.valueOf(status));
-		
+
 		// la demande vient du client alors notifier le propriétaire
-		if(booking.getClient().getId() == userId) {
+		if (booking.getClient().getId() == userId) {
 			booking.getRoom().getOwner().getBookingNotifications().add(booking.getId());
 			booking.getClient().getBookingNotifications().remove(booking.getId());
 		}
 		// sinon notifier le client
-		else {
+		else if (booking.getRoom().getOwner().getId() == userId) {
 			booking.getClient().getBookingNotifications().add(booking.getId());
 			booking.getRoom().getOwner().getBookingNotifications().remove(booking.getId());
 		}
-		
-		return bookingRepository.save(booking);
-		
-	}
-
-
-	private Booking createAndFillBooking(BookingRequest bookingRequest) throws UnavailableException{
-		Booking booking = new Booking();
-		Room room = roomService.findById(bookingRequest.getRoomId());
-		User client = userService.findById(bookingRequest.getClientId());
-		
-		// notification propriétaire
-		room.getOwner().getBookingNotifications().add(room.getId());
-
-		// remplir l'objet booking
-		booking.setClient(client);
-		booking.setRoom(room);
-		booking.setStart(DateUtils.parseTime(bookingRequest.getStartTime()));
-		booking.setEnd(DateUtils.parseTime(bookingRequest.getEndTime()));
-		booking.setDuration((int) Duration.between(booking.getStart(), booking.getEnd()).toHours());
-		booking.setDates(generateDates(bookingRequest.getStartDate(), bookingRequest.getEndDate(),
-				bookingRequest.getWeekRepetition()));
-		booking.setPrice(generatePrice(booking));
-
-		// Vérifier la disponibilité
-		if (!isAvalaible(booking)) {
-			throw new UnavailableException();
-		}
-
-		return booking;
-	}
-
-	private Set<LocalDate> generateDates(String startDate, String endDate, int weekRepetition) {
-		// si la réservation ne concerne qu'une journée
-		if (weekRepetition == 0 || startDate.equals(endDate)) {
-			return Set.of(DateUtils.parseDate(startDate));
-		} 
-		// sinon définir les dates
+		// sinon l'utilisateur n'est pas autorisé à changé le statut
 		else {
-			return DateUtils.parseDate(startDate)
-					.datesUntil(DateUtils.parseDate(endDate), Period.ofWeeks(weekRepetition))
-					.collect(Collectors.toSet());
+			throw new ForbiddenException();
 		}
+		return bookingRepository.save(booking);
+
 	}
 
 	private boolean isAvalaible(Booking booking) {
+		// parcourir les jours de réservation 
 		for (LocalDate date : booking.getDates()) {
-			if (!roomService.isFree(booking.getRoom(), date, booking.getStart(), booking.getEnd())) {
+			// vérifier si la salle est libre ce jour aux heures souhaitées
+			if (!roomService.isFree(booking.getRoom(), date, booking.getBegin().toLocalTime(),
+					booking.getEnd().toLocalTime())) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private double generatePrice(Booking booking) {
-		return booking.getDates().size() * booking.getDuration() * booking.getRoom().getPrice();
-	}
+
+
+
 
 }

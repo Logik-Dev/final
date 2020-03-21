@@ -1,15 +1,14 @@
 package project.services;
 
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-import project.models.Comment;
-import project.models.Room;
-import project.models.User;
+import project.models.entities.Comment;
+import project.models.entities.Room;
 import project.repositories.CommentRepository;
-import project.utils.DateUtils;
 
 /**
  * Service de gestion des commentaires.
@@ -17,27 +16,31 @@ import project.utils.DateUtils;
  *
  */
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CommentService {
 	
-	private final CommentRepository commentRepository;
+	@Autowired
+	private CommentRepository commentRepository;
 	
-	private final RoomService roomService;
+	@Autowired
+	private RoomService roomService;
 	
-	private final UserService userService;
+	@Autowired
+	private UserService userService;
 	
-	public Comment save(Comment comment, int roomId, int authorId, String createdOn) {
-		User author = userService.findById(authorId);
+
+	public Comment save(Comment comment, Long authorId, Long roomId) {
+		comment.setAuthor(userService.findById(authorId));
 		Room room = roomService.findById(roomId);
-		comment.setCreatedOn(DateUtils.parseDate(createdOn));
-		comment.setAuthor(author);
-		int grade = comment.getGrade();
-		for(Comment c: room.getComments()) {
-			grade += c.getGrade();
-		}
-		room.setGrade(grade / (room.getComments().size() + 1));
-		comment.setRoom(room);
+		comment.setPublishedOn(LocalDate.now());
 		
+		// recalculer la note de la salle
+		int rating = comment.getRating();
+		for(Comment c: room.getComments()) {
+			rating += c.getRating();
+		}
+		
+		room.setRating(rating);
+		comment.setRoom(room);
 		return commentRepository.save(comment);
 	}
 	
