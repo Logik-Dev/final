@@ -144,6 +144,7 @@ public class RoomService {
 			Photo photo = new Photo();
 			try {
 				photo.setFile(file.getBytes());
+				photo.setRoom(room);
 				photos.add(photo);
 			} catch (IOException e) {
 				throw new InternalException();

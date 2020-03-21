@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Formula;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -25,6 +27,12 @@ public class Photo {
 	@Lob
 	@JsonIgnore
 	private byte[] file;
+	
+	@JsonIgnore
+	private String baseUrl = "http://localhost:8080/api/rooms/photos/";
+	
+	@Formula("concat(base_url,'', id)")
+	private String url;
 	
 	@JsonIgnore
 	@ManyToOne
