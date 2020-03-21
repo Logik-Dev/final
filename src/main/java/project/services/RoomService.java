@@ -162,13 +162,15 @@ public class RoomService {
 	}
 
 	private Room setEquipments(Room room) {
-		Set<Equipment> equipments = new HashSet<>();
-		for (Equipment equipment : room.getEquipments()) {
-			Equipment e = equipmentRepository.findByName(equipment.getName())
-					.orElseThrow(() -> new NotFoundException(equipment.getName()));
-			equipments.add(e);
+		if (room.getEquipments() != null) {
+			Set<Equipment> equipments = new HashSet<>();
+			for (Equipment equipment : room.getEquipments()) {
+				Equipment e = equipmentRepository.findByName(equipment.getName())
+						.orElseThrow(() -> new NotFoundException(equipment.getName()));
+				equipments.add(e);
+			}
+			room.setEquipments(equipments);
 		}
-		room.setEquipments(equipments);
 		return room;
 
 	}

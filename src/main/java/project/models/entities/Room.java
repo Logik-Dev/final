@@ -31,6 +31,8 @@ public class Room {
 	
 	private double size;
 	
+	private String name;
+	
 	@OneToOne(cascade = CascadeType.ALL)
 	private Address address;
 	
