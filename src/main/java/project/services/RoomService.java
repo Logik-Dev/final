@@ -52,8 +52,10 @@ public class RoomService {
 
 	public List<Room> find(String city, String day, String start, String end) {
 		if (city != null) {
-			if (start == null || end == null) {
+			if (day == null) {
 				return findByCity(city);
+			} else if (start == null || end == null) {
+				return findByCityAndDay(city, day);
 			} else {
 				return findByCityAndDate(city, day, start, end);
 			}
@@ -66,6 +68,15 @@ public class RoomService {
 		List<Room> rooms = roomRepository.findByCity(city);
 		if (rooms.isEmpty())
 			throw new NotFoundException();
+		return rooms;
+	}
+
+	public List<Room> findByCityAndDay(String city, String day) {
+		List<Room> rooms = roomRepository.findByCityAndAvailableDays(city,
+				DateUtils.parseDate(day).getDayOfWeek().getValue());
+		if (rooms.isEmpty()) {
+			throw new NotFoundException();
+		}
 		return rooms;
 	}
 
