@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import project.exceptions.ForbiddenException;
 import project.models.entities.User;
+import project.models.responses.BooleanResponse;
 import project.models.responses.JwtResponse;
 import project.services.UserService;
 
@@ -33,6 +35,11 @@ public class UserController {
 			throw new ForbiddenException();
 		}
 		return ResponseEntity.ok(userService.findById(id));
+	}
+	
+	@GetMapping("/exists")
+	public ResponseEntity<BooleanResponse> userExists(@RequestParam String email){
+		return ResponseEntity.ok(new BooleanResponse(userService.emailExists(email)));
 	}
 	
 	@PostMapping
