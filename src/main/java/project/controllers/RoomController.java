@@ -1,10 +1,10 @@
 package project.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import project.exceptions.ForbiddenException;
+import project.models.entities.Equipment;
 import project.models.entities.Room;
+import project.models.entities.RoomType;
 import project.models.entities.User;
 import project.services.RoomService;
 
@@ -44,10 +46,26 @@ public class RoomController {
 		return ResponseEntity.ok(roomService.getPhoto(id));
 	}
 
-	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Room> create(@RequestPart Room room, @AuthenticationPrincipal User user, @RequestPart MultipartFile files[]) {
+	@GetMapping("/types")
+	public ResponseEntity<List<RoomType>> getRoomTypes() {
+		return ResponseEntity.ok(roomService.getTypes());
+	}
+	
+	@GetMapping("/equipments")
+	public ResponseEntity<List<Equipment>> getEquipments() {
+		return ResponseEntity.ok(roomService.getEquipments());
+	}
+	
+	@PostMapping
+	public ResponseEntity<Room> create(@RequestBody Room room, @AuthenticationPrincipal User user) {
 		if(user == null) throw new ForbiddenException();
-		return ResponseEntity.status(HttpStatus.CREATED).body(roomService.save(room, user.getId(), files));
+		return ResponseEntity.status(HttpStatus.CREATED).body(roomService.save(room, user.getId()));
+	}
+	
+	@PostMapping("/{id}/photos")
+	public ResponseEntity<Room> addPhotos(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestPart MultipartFile files[]) throws IOException {
+		if(user == null) throw new ForbiddenException();
+		return ResponseEntity.ok(roomService.addPhotos(id, files, user.getId()));
 	}
 
 	@PutMapping

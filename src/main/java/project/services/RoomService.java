@@ -49,7 +49,15 @@ public class RoomService {
 
 	@Autowired
 	private UserService userService;
-
+	
+	public List<RoomType> getTypes() {
+		return roomTypeRepository.findAll();
+	}
+	
+	public List<Equipment> getEquipments() {
+		return equipmentRepository.findAll();
+	}
+	
 	public List<Room> find(String city, String day, String start, String end) {
 		if (city != null) {
 			if (day == null) {
@@ -101,9 +109,15 @@ public class RoomService {
 			throw new NotFoundException();
 		return rooms;
 	}
-
-	public Room save(Room room, Long ownerId, MultipartFile files[]) {
+	public Room addPhotos(Long roomId, MultipartFile files[], Long ownerId ) {
+		Room room = roomRepository.findById(roomId)
+				.orElseThrow(() -> new NotFoundException());
+		if(room.getOwner().getId() != ownerId) throw new ForbiddenException();
 		room = setPhotos(room, files);
+		return roomRepository.save(room);
+	}
+	
+	public Room save(Room room, Long ownerId) {
 		room = setRoomType(room);
 		room = setEquipments(room);
 		room.setOwner(userService.findById(ownerId));
@@ -157,6 +171,7 @@ public class RoomService {
 				photo.setFile(file.getBytes());
 				photo.setRoom(room);
 				photos.add(photo);
+				System.out.println(photo.getFile());
 			} catch (IOException e) {
 				throw new InternalException();
 			}
