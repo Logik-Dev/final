@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,7 +62,7 @@ public class RoomController {
 	}
 	
 	@PostMapping("/{id}/photos")
-	public ResponseEntity<Room> addPhotos(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestPart MultipartFile files[]) throws IOException {
+	public ResponseEntity<Room> addPhotos(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestParam MultipartFile files[]) throws IOException {
 		if(user == null) throw new ForbiddenException();
 		return ResponseEntity.ok(roomService.addPhotos(id, files, user.getId()));
 	}

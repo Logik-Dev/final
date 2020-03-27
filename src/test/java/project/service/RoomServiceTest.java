@@ -48,7 +48,7 @@ class RoomServiceTest {
 		when(roomRepository.save(room)).thenReturn(room);
 
 		// act
-		Room result = roomService.save(room, Long.valueOf(1), null);
+		Room result = roomService.save(room, Long.valueOf(1));
 
 		// assert
 		assertEquals(1, result.getId());

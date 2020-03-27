@@ -170,8 +170,7 @@ public class RoomService {
 			try {
 				photo.setFile(file.getBytes());
 				photo.setRoom(room);
-				photos.add(photo);
-				System.out.println(photo.getFile());
+				photos.add(photo);	
 			} catch (IOException e) {
 				throw new InternalException();
 			}

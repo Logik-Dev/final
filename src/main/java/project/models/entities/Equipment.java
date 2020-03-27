@@ -26,4 +26,5 @@ public class Equipment {
 	@Column(unique = true)
 	private String name;
 	
+	
 }

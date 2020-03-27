@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -44,11 +45,11 @@ public class Room {
 	@OneToOne(cascade = CascadeType.PERSIST)
 	private RoomType type;
 	
-	@OneToMany(cascade = CascadeType.PERSIST)
+	@ManyToMany
 	private Set<Equipment> equipments;
 	
-	@Column(columnDefinition = "integer default 0")
-	private int rating = 0;
+	@Column(columnDefinition = "tinyint default 5")
+	private int rating = 5;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
 	private Set<Photo> photos;

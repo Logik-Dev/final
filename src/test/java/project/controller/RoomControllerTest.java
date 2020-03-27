@@ -95,7 +95,7 @@ class RoomControllerTest {
 
 	@Test
 	void testCreate() throws JsonProcessingException, Exception {
-		when(roomService.save(room, Long.valueOf(1), null)).thenReturn(room);
+		when(roomService.save(room, Long.valueOf(1))).thenReturn(room);
 
 		mvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(room)))
 				.andExpect(status().isCreated());
