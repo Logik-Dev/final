@@ -32,7 +32,12 @@ public class RoomController {
 
 	@Autowired
 	private RoomService roomService;
-
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<Room> find(@PathVariable Long id) {
+		return ResponseEntity.ok(roomService.findById(id));
+	}
+	
 	@GetMapping
 	public ResponseEntity<List<Room>> find(@RequestParam(required = false) String city,
 			@RequestParam(required = false) String day, @RequestParam(required = false) String start,
