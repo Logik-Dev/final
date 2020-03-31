@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import project.exceptions.ConflictException;
+import project.exceptions.ForbiddenException;
 import project.exceptions.InternalException;
 import project.exceptions.NotFoundException;
 import project.models.responses.ErrorResponse;
@@ -41,8 +41,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return fillResponse(ex, HttpStatus.UNAUTHORIZED);
 	}
 
-	@ExceptionHandler(AuthenticationException.class)
-	public ResponseEntity<ErrorResponse> handleFrobiddenRoutes(Exception ex) throws IOException {
+	@ExceptionHandler(ForbiddenException.class)
+	public ResponseEntity<ErrorResponse> handleForbiddenRoutes(Exception ex) throws IOException {
 		return fillResponse(ex, HttpStatus.FORBIDDEN);
 	}
 

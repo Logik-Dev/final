@@ -26,7 +26,7 @@ public class CommentController {
 	
 	@PostMapping
 	public ResponseEntity<Comment> create(@RequestBody Comment comment, @RequestParam Long roomId, @AuthenticationPrincipal User user){
-		if(user == null) throw new ForbiddenException();
+		if(user == null) throw new ForbiddenException("Pas authentifié");
 		return ResponseEntity.status(HttpStatus.CREATED).body(commentService.save(comment, user.getId(), roomId));
 	}
 

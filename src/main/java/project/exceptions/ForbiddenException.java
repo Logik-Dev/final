@@ -9,5 +9,9 @@ public class ForbiddenException extends AuthenticationException{
 	public ForbiddenException() {
 		super("Vous n'êtes pas autorisé à accéder à cette ressource");
 	}
+	
+	public ForbiddenException(String message) {
+		super(message);
+	}
 
 }

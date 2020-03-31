@@ -62,9 +62,9 @@ public class Booking {
 		if (weekRepetition == 0 || begin.toLocalDate().equals(end.toLocalDate())) {
 			dates.add(begin.toLocalDate());
 
-			// sinon générer toutes les dates
+			// sinon générer toutes les dates en ajoutant 1 jour à la fin car exclusive
 		} else {
-			dates = begin.toLocalDate().datesUntil(end.toLocalDate(), Period.ofWeeks(weekRepetition)).collect(Collectors.toSet());
+			dates = begin.toLocalDate().datesUntil(end.toLocalDate().plusDays(1), Period.ofWeeks(weekRepetition)).collect(Collectors.toSet());
 		}
 		return dates;
 	}

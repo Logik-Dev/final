@@ -42,7 +42,7 @@ public class Room {
 	@ElementCollection
 	private Set<DayOfWeek> availableDays;
 	
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.MERGE)
 	private RoomType type;
 	
 	@ManyToMany
