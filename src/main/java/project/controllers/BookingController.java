@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import project.exceptions.ForbiddenException;
 import project.models.entities.Booking;
 import project.models.entities.User;
+import project.models.responses.BooleanResponse;
 import project.services.BookingService;
 
 @RestController
@@ -36,6 +37,15 @@ public class BookingController {
 			throw new ForbiddenException();
 		}
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.save(roomId, booking, user.getId()));
+	}
+
+	@GetMapping("/rooms/{roomId}")
+	public ResponseEntity<BooleanResponse> checkAvailable(@AuthenticationPrincipal User user, @PathVariable Long roomId,
+			@RequestParam String begin, @RequestParam String end, @RequestParam int weekRepetition) {
+		if (user == null) {
+			throw new ForbiddenException();
+		}
+		return ResponseEntity.ok(new BooleanResponse(bookingService.checkAvailable(begin, end, weekRepetition, roomId)));
 	}
 
 	@GetMapping

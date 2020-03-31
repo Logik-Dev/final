@@ -12,6 +12,7 @@ import project.exceptions.NotFoundException;
 import project.models.BookingStatus;
 import project.models.entities.Booking;
 import project.repositories.BookingRepository;
+import project.utils.DateUtils;
 
 @Service
 public class BookingService {
@@ -44,7 +45,14 @@ public class BookingService {
 		
 		return bookingRepository.save(savedBooking);
 	}
-
+	public boolean checkAvailable(String begin, String end, int weekRepetition, Long roomId) {
+		Booking booking = new Booking();
+		booking.setBegin(DateUtils.parseDateTime(begin));
+		booking.setEnd(DateUtils.parseDateTime(end));
+		booking.setWeekRepetition(weekRepetition);
+		booking.setRoom(roomService.findById(roomId));
+		return isAvalaible(booking);
+	}
 	public List<Booking> findByRoom(Long roomId) throws NotFoundException {
 		List<Booking> bookings = bookingRepository.findByRoomId(roomId);
 		if (bookings.isEmpty())
