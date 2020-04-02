@@ -44,6 +44,7 @@ public class CommentService {
 			throw new ForbiddenException("Commentaire possible uniquement pour les réservations terminées");
 		}
 		comment.setAuthor(author);
+		System.out.println(LocalDate.now());
 		comment.setPublishedOn(LocalDate.now());
 		
 		// recalculer la note de la salle

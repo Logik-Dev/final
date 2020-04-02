@@ -29,7 +29,6 @@ public class Comment {
 	
 	private int rating;
 	
-	@JsonIgnore
 	@ManyToOne
 	private User author;
 	
