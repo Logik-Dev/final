@@ -3,7 +3,6 @@ package project.services;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,18 +57,17 @@ public class RoomService {
 		return equipmentRepository.findAll();
 	}
 	
-	public List<Room> find(String city, String day, String start, String end) {
-		if (city != null) {
-			if (day == null) {
-				return findByCity(city);
-			} else if (start == null || end == null) {
+	public List<Room> find(String city, String day) {
+		if(city != null) {
+			if(day != null) {
+				System.out.println("here");
 				return findByCityAndDay(city, day);
+
 			} else {
-				return findByCityAndDate(city, day, start, end);
+				return findByCity(city);
 			}
-		} else {
+		} else 
 			return findAll();
-		}
 	}
 
 	public List<Room> findByCity(String city) throws NotFoundException {
@@ -80,14 +78,14 @@ public class RoomService {
 	}
 
 	public List<Room> findByCityAndDay(String city, String day) {
-		List<Room> rooms = roomRepository.findByCityAndAvailableDays(city,
-				DateUtils.parseDate(day).getDayOfWeek().getValue());
+		List<Room> rooms = roomRepository.findByCityAndDay(city,
+				DateUtils.parseDate(day).getDayOfWeek());
 		if (rooms.isEmpty()) {
 			throw new NotFoundException();
 		}
 		return rooms;
 	}
-
+	/*
 	public List<Room> findByCityAndDate(String city, String day, String start, String end) throws NotFoundException {
 		List<Room> rooms = this.findByCity(city);
 		List<Room> freeRooms = new ArrayList<>();
@@ -101,7 +99,7 @@ public class RoomService {
 		if (freeRooms.isEmpty())
 			throw new NotFoundException();
 		return freeRooms;
-	}
+	}*/
 
 	public List<Room> findAll() throws NotFoundException {
 		List<Room> rooms = roomRepository.findAll();

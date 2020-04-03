@@ -32,21 +32,21 @@ public class RoomController {
 
 	@Autowired
 	private RoomService roomService;
+
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Room> find(@PathVariable Long id) {
+	public ResponseEntity<Room> findOne(@PathVariable Long id) {
 		return ResponseEntity.ok(roomService.findById(id));
 	}
-	
+
 	@GetMapping
 	public ResponseEntity<List<Room>> find(@RequestParam(required = false) String city,
-			@RequestParam(required = false) String day, @RequestParam(required = false) String start,
-			@RequestParam(required = false) String end) {
-		return ResponseEntity.ok(roomService.find(city, day, start, end));
+			@RequestParam(required = false) String day) {
+		return ResponseEntity.ok(roomService.find(city, day));
 	}
-	
+
 	@GetMapping(value = "/photos/{id}", produces = "image/jpg")
-	public ResponseEntity<byte[]> getPhoto(@PathVariable Long id) {		
+	public ResponseEntity<byte[]> getPhoto(@PathVariable Long id) {
 		return ResponseEntity.ok(roomService.getPhoto(id));
 	}
 
@@ -54,27 +54,31 @@ public class RoomController {
 	public ResponseEntity<List<RoomType>> getRoomTypes() {
 		return ResponseEntity.ok(roomService.getTypes());
 	}
-	
+
 	@GetMapping("/equipments")
 	public ResponseEntity<List<Equipment>> getEquipments() {
 		return ResponseEntity.ok(roomService.getEquipments());
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<Room> create(@RequestBody Room room, @AuthenticationPrincipal User user) {
-		if(user == null) throw new ForbiddenException();
+		if (user == null)
+			throw new ForbiddenException();
 		return ResponseEntity.status(HttpStatus.CREATED).body(roomService.save(room, user.getId()));
 	}
-	
+
 	@PostMapping("/{id}/photos")
-	public ResponseEntity<Room> addPhotos(@PathVariable Long id, @AuthenticationPrincipal User user, @RequestParam MultipartFile files[]) throws IOException {
-		if(user == null) throw new ForbiddenException();
+	public ResponseEntity<Room> addPhotos(@PathVariable Long id, @AuthenticationPrincipal User user,
+			@RequestParam MultipartFile files[]) throws IOException {
+		if (user == null)
+			throw new ForbiddenException();
 		return ResponseEntity.ok(roomService.addPhotos(id, files, user.getId()));
 	}
 
 	@PutMapping
 	public ResponseEntity<Room> updateRoom(@RequestBody Room room, @AuthenticationPrincipal User user) {
-		if(user == null) throw new ForbiddenException();
+		if (user == null)
+			throw new ForbiddenException();
 		return ResponseEntity.ok(roomService.update(room, user.getId()));
 	}
 

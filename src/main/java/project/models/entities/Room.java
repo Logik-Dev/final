@@ -7,6 +7,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,6 +42,7 @@ public class Room {
 	private int maxCapacity;
 	
 	@ElementCollection
+	@Enumerated(EnumType.STRING)
 	private Set<DayOfWeek> availableDays;
 	
 	@OneToOne(cascade = CascadeType.MERGE)

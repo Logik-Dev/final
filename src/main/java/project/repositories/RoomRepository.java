@@ -1,5 +1,6 @@
 package project.repositories;
 
+import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 	@Query("SELECT p FROM Photo p WHERE p.id = :id")
 	Optional<Photo> findPhotoById(@Param("id") Long id);
 
-	@Query("SELECT r FROM Room r JOIN r.availableDays d WHERE r.address.city = :city AND :day IN d")
-	List<Room> findByCityAndAvailableDays(@Param("city") String city, @Param("day") int day);
+	@Query("SELECT r FROM Room r JOIN r.availableDays d WHERE r.address.city = :city AND d = :day")
+	List<Room> findByCityAndDay(@Param("city") String city, @Param("day") DayOfWeek day);
 
 }
