@@ -41,8 +41,8 @@ public class RoomController {
 
 	@GetMapping
 	public ResponseEntity<List<Room>> find(@RequestParam(required = false) String city,
-			@RequestParam(required = false) String day) {
-		return ResponseEntity.ok(roomService.find(city, day));
+			@RequestParam(required = false) String day, @RequestParam(required = false) Integer zipCode) {
+		return ResponseEntity.ok(roomService.find(city, zipCode, day));
 	}
 
 	@GetMapping(value = "/photos/{id}", produces = "image/jpg")

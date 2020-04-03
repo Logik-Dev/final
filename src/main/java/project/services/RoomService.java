@@ -57,21 +57,21 @@ public class RoomService {
 		return equipmentRepository.findAll();
 	}
 	
-	public List<Room> find(String city, String day) {
+	public List<Room> find(String city, int zipCode,  String day) {
 		if(city != null) {
 			if(day != null) {
 				System.out.println("here");
 				return findByCityAndDay(city, day);
 
 			} else {
-				return findByCity(city);
+				return findByCity(city, zipCode);
 			}
 		} else 
 			return findAll();
 	}
 
-	public List<Room> findByCity(String city) throws NotFoundException {
-		List<Room> rooms = roomRepository.findByCity(city);
+	public List<Room> findByCity(String city, int zipCode) throws NotFoundException {
+		List<Room> rooms = roomRepository.findByCity(city, zipCode);
 		if (rooms.isEmpty())
 			throw new NotFoundException();
 		return rooms;
