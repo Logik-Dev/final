@@ -57,7 +57,7 @@ public class RoomService {
 		return equipmentRepository.findAll();
 	}
 	
-	public List<Room> find(String city, int zipCode,  String day) {
+	public List<Room> find(String city, Integer zipCode,  String day) {
 		if(city != null) {
 			if(day != null) {
 				System.out.println("here");

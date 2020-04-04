@@ -46,8 +46,8 @@ public class RoomController {
 	}
 
 	@GetMapping(value = "/photos/{id}", produces = "image/jpg")
-	public ResponseEntity<byte[]> getPhoto(@PathVariable Long id) {
-		return ResponseEntity.ok(roomService.getPhoto(id));
+	public byte[] getPhoto(@PathVariable Long id) {
+		return roomService.getPhoto(id);
 	}
 
 	@GetMapping("/types")
