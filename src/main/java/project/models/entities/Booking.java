@@ -48,6 +48,7 @@ public class Booking {
 	
 	private double price;
 	
+	@JsonIgnore
 	@ManyToOne
 	private User client;
 	

@@ -57,6 +57,12 @@ public class RoomService {
 		return equipmentRepository.findAll();
 	}
 	
+	public List<Room> findByUserId(Long id){
+		List<Room> rooms = this.roomRepository.findByUser(id);
+		if(rooms.isEmpty()) throw new NotFoundException();
+		return rooms;
+	}
+	
 	public List<Room> find(String city, Integer zipCode,  String day) {
 		if(city != null) {
 			if(day != null) {

@@ -65,7 +65,6 @@ public class User implements UserDetails {
 	@OneToMany(mappedBy = "owner")
 	private Set<Room> rooms;
 	
-	@JsonIgnore
 	@OneToMany(mappedBy = "client")
 	private Set<Booking> bookings;
 	

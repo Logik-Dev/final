@@ -38,7 +38,12 @@ public class RoomController {
 	public ResponseEntity<Room> findOne(@PathVariable Long id) {
 		return ResponseEntity.ok(roomService.findById(id));
 	}
-
+	
+	@GetMapping("/users/{id}")
+	public ResponseEntity<List<Room>> findByUser( @PathVariable Long id){
+		return ResponseEntity.ok(roomService.findByUserId(id));
+	}
+	
 	@GetMapping
 	public ResponseEntity<List<Room>> find(@RequestParam(required = false) String city,
 			@RequestParam(required = false) String day, @RequestParam(required = false) Integer zipCode) {

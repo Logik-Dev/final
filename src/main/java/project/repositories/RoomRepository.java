@@ -15,6 +15,9 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
 	@Query("SELECT r FROM Room r WHERE r.address.city = :city AND r.address.zipCode = :zipCode")
 	List<Room> findByCity(@Param("city") String city, @Param("zipCode") int zipCode);
+	
+	@Query("SELECT r FROM Room r WHERE r.owner.id = :id")
+	List<Room> findByUser(@Param("id") Long id);
 
 	@Query("SELECT p FROM Photo p WHERE p.id = :id")
 	Optional<Photo> findPhotoById(@Param("id") Long id);
