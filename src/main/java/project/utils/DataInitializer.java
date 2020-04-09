@@ -111,6 +111,27 @@ public class DataInitializer {
 		booking.setWeekRepetition(0);
 		booking.calculatePrice();
 		booking.setStatus(BookingStatus.FINISHED);
-		bookingRepository.save(booking);
+
+		// Reservation en cours confirmé
+		Booking booking2 = new Booking();
+		booking2.setClient(admin);
+		booking2.setRoom(dancing);
+		booking2.setBegin(DateUtils.parseDateTime("01/07/2020 16:00"));
+		booking2.setEnd(DateUtils.parseDateTime("09/07/2020 17:00"));
+		booking2.setWeekRepetition(1);
+		booking2.calculatePrice();
+		booking2.setStatus(BookingStatus.CONFIRMED);
+		
+		// Non confirmé
+		Booking booking3 = new Booking();
+		booking3.setClient(admin);
+		booking3.setRoom(dancing);
+		booking3.setBegin(DateUtils.parseDateTime("01/08/2020 18:00"));
+		booking3.setEnd(DateUtils.parseDateTime("01/08/2020 19:00"));
+		booking3.setWeekRepetition(0);
+		booking3.calculatePrice();
+		booking3.setStatus(BookingStatus.PENDING);
+		
+		bookingRepository.saveAll(Set.of(booking, booking2, booking3));
 	}
 }

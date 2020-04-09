@@ -67,7 +67,7 @@ class RoomServiceTest {
 		assertEquals(1, result.getId());
 		assertThrows(NotFoundException.class, () -> roomService.findById(Long.valueOf(2)));
 	}
-
+	/**
 	@Test
 	void testFindByCity() {
 		// arrange
@@ -97,7 +97,7 @@ class RoomServiceTest {
 		assertThrows(NotFoundException.class,
 				() -> roomService.findByCityAndDate("nantes", "01/01/2020", "10:00", "11:00")); // -> Heure déjà réservée
 	}
-
+	*/
 	@Test
 	void testFindAll() {
 		// arrange

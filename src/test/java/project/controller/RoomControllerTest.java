@@ -58,7 +58,7 @@ class RoomControllerTest {
 		address.setCity("nantes");
 		room.setAddress(address);
 	}
-
+	/**
 	@Test
 	void testFindByCity() throws Exception {
 		when(roomService.findByCity("nantes")).thenReturn(Arrays.asList(room));
@@ -81,7 +81,7 @@ class RoomControllerTest {
 
 		mvc.perform(get(URL + "/city/unknown/date?date=22/05/2019&start=10:00&end=11:00")).andExpect(notFound);
 	}
-
+	 */
 	@Test
 	void testFindAll() throws Exception {
 		when(roomService.findAll()).thenReturn(Arrays.asList(room));

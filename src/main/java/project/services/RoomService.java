@@ -66,7 +66,6 @@ public class RoomService {
 	public List<Room> find(String city, Integer zipCode,  String day) {
 		if(city != null) {
 			if(day != null) {
-				System.out.println("here");
 				return findByCityAndDay(city, day);
 
 			} else {
