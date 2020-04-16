@@ -29,7 +29,12 @@ public class BookingController {
 
 	@Autowired
 	private BookingService bookingService;
-
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<Booking> findById(@PathVariable Long id) {
+		return ResponseEntity.ok(bookingService.findById(id));
+	}
+	
 	@PostMapping("/rooms/{roomId}")
 	public ResponseEntity<Booking> create(@AuthenticationPrincipal User user, @PathVariable Long roomId,
 			@RequestBody Booking booking) {
@@ -39,7 +44,7 @@ public class BookingController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.save(roomId, booking, user.getId()));
 	}
 
-	@GetMapping("/rooms/{roomId}")
+	@GetMapping("/rooms/{roomId}/available")
 	public ResponseEntity<BooleanResponse> checkAvailable(@AuthenticationPrincipal User user, @PathVariable Long roomId,
 			@RequestParam String begin, @RequestParam String end, @RequestParam int weekRepetition) {
 		if (user == null) {
@@ -48,8 +53,8 @@ public class BookingController {
 		return ResponseEntity.ok(new BooleanResponse(bookingService.checkAvailable(begin, end, weekRepetition, roomId)));
 	}
 
-	@GetMapping
-	public List<Booking> findByRoom(@RequestParam Long roomId) {
+	@GetMapping("/rooms/{roomId}")
+	public List<Booking> findByRoom(@PathVariable Long roomId) {
 		return bookingService.findByRoom(roomId);
 	}
 

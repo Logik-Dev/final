@@ -71,7 +71,9 @@ public class Booking {
 	}
 	
 	public void calculatePrice() {
-		this.price = getDates().size() * getDuration() * getRoom().getPrice();
+		double p = getDates().size() * getDuration() * getRoom().getPrice();
+		p += p / 10;
+		this.price = p;
 	}
 	
 	private int getDuration() {

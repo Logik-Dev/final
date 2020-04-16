@@ -95,5 +95,9 @@ public class BookingService {
 		}
 		return true;
 	}
+	public Booking findById(Long id) {
+		Booking booking = bookingRepository.findById(id).orElseThrow(() -> new NotFoundException());
+		return booking;
+	}
 
 }
