@@ -1,6 +1,6 @@
 package project.models.entities;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,14 +8,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @Entity
 @NoArgsConstructor
 public class Comment {
@@ -25,14 +24,16 @@ public class Comment {
 	
 	private String content;
 	
-	private LocalDate publishedOn;
+	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
+	private LocalDateTime publishedOn = LocalDateTime.now();
 	
 	private int rating;
 	
+	@JsonIgnoreProperties({"comments", "bookings", "rooms", "email", "address", "roles"})
 	@ManyToOne
 	private User author;
 	
-	@JsonIgnore
+	@JsonIgnoreProperties("comments")
 	@ManyToOne
 	private Room room;
 

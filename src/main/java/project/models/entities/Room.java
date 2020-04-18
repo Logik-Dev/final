@@ -1,14 +1,11 @@
 package project.models.entities;
 
-import java.time.DayOfWeek;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,6 +13,10 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PostLoad;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,10 +43,9 @@ public class Room {
 	private int maxCapacity;
 	
 	@ElementCollection
-	@Enumerated(EnumType.STRING)
-	private Set<DayOfWeek> availableDays;
-	
-	@OneToOne(cascade = CascadeType.MERGE)
+	private Set<String> availableDays;
+		
+	@OneToOne
 	private RoomType type;
 	
 	@ManyToMany
@@ -54,16 +54,32 @@ public class Room {
 	@Column(columnDefinition = "tinyint default 5")
 	private int rating = 5;
 	
+	@JsonIgnoreProperties("room")
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
 	private Set<Photo> photos;
 	
+	@JsonIgnore
 	@ManyToOne
 	private User owner;
 	
+	@JsonIgnoreProperties("room")
 	@OneToMany(mappedBy = "room")
 	private Set<Booking> bookings;
 	
+	@JsonIgnoreProperties("room")
 	@OneToMany(mappedBy = "room")
 	private Set<Comment> comments;
+	
+	@PostLoad
+	private void calculateRating() {
+		rating = 5;
+		if(comments.size() > 0) {
+			for(Comment c: comments) {
+				this.rating += c.getRating();
+			}
+			rating /= comments.size() + 1;
+		}
+
+	}
 
 }

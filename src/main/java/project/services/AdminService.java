@@ -11,9 +11,9 @@ public class AdminService {
 	@Autowired
 	private UserService userService;
 	
-	public User lockUserAccount(Long userId) {
+	public User update(Long userId, boolean locked) {
 		User user = userService.findById(userId);
-		user.setAccountNonLocked(false);
+		user.setAccountNonLocked(!locked);
 		return userService.update(user);
 	}
 }

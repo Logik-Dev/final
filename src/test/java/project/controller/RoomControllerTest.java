@@ -11,12 +11,11 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
@@ -29,7 +28,7 @@ import project.models.entities.Address;
 import project.models.entities.Room;
 import project.services.RoomService;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest
 @WebMvcTest(RoomController.class)
 class RoomControllerTest {
 
@@ -95,7 +94,7 @@ class RoomControllerTest {
 
 	@Test
 	void testCreate() throws JsonProcessingException, Exception {
-		when(roomService.save(room, Long.valueOf(1))).thenReturn(room);
+		when(roomService.create(room)).thenReturn(room);
 
 		mvc.perform(post(URL).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(room)))
 				.andExpect(status().isCreated());

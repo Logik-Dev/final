@@ -1,6 +1,9 @@
 package project.controllers;
 
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +16,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import project.exceptions.ForbiddenException;
 import project.models.entities.User;
-import project.models.responses.BooleanResponse;
-import project.models.responses.JwtResponse;
 import project.services.UserService;
 
 @RestController
@@ -30,16 +32,16 @@ public class UserController {
 	private UserService userService;
 		
 	@GetMapping("/{id}")
-	public ResponseEntity<User> findById(@PathVariable Long id, @AuthenticationPrincipal User user) throws ForbiddenException{
+	public @ResponseBody User findById(@PathVariable Long id, @AuthenticationPrincipal User user) throws ForbiddenException{
 		if(user == null || id != user.getId()) {
 			throw new ForbiddenException();
 		}
-		return ResponseEntity.ok(userService.findById(id));
+		return userService.findById(id);
 	}
 	
 	@GetMapping("/exists")
-	public ResponseEntity<BooleanResponse> userExists(@RequestParam String email){
-		return ResponseEntity.ok(new BooleanResponse(userService.emailExists(email)));
+	public @ResponseBody Map<String, Boolean> userExists(@RequestParam String email){
+		return Collections.singletonMap("result", userService.emailExists(email));
 	}
 	
 	@PostMapping
@@ -48,9 +50,8 @@ public class UserController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<JwtResponse> login(@RequestBody User user) {
-		JwtResponse response = new JwtResponse(userService.authenticate(user));
-		return ResponseEntity.ok(response);
+	public @ResponseBody Map<String, String> login(@RequestBody User user) {
+		return Collections.singletonMap("jwt", userService.authenticate(user));
 	}
 	
 	@PutMapping

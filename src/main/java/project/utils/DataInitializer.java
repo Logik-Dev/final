@@ -1,19 +1,18 @@
 package project.utils;
 
-import java.time.DayOfWeek;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import project.models.BookingStatus;
 import project.models.Role;
 import project.models.entities.Address;
 import project.models.entities.Booking;
 import project.models.entities.Equipment;
 import project.models.entities.Room;
 import project.models.entities.RoomType;
+import project.models.entities.TimeSlot;
 import project.models.entities.User;
 import project.repositories.BookingRepository;
 import project.repositories.EquipmentRepository;
@@ -76,9 +75,9 @@ public class DataInitializer {
 		roomTypeRepository.saveAll(allTypes);
 		
 		// Création des équipements
-		Equipment parquet = new Equipment("Parquet");
-		Equipment mirrors = new Equipment("Miroirs");
-		Equipment mix = new Equipment("Console de mixage");
+		Equipment parquet = new Equipment("parquet");
+		Equipment mirrors = new Equipment("miroirs");
+		Equipment mix = new Equipment("console de mixage");
 		Set<Equipment> equipments = Set.of(parquet, mirrors, mix);
 		equipmentRepository.saveAll(equipments);
 		
@@ -93,7 +92,7 @@ public class DataInitializer {
 		// Création de la salle dancing
 		Room dancing = new Room();
 		dancing.setName("Le dancing");
-		dancing.setAvailableDays(Set.of(DayOfWeek.FRIDAY, DayOfWeek.MONDAY, DayOfWeek.SUNDAY, DayOfWeek.SATURDAY));
+		dancing.setAvailableDays(Set.of("vendredi", "lundi", "samedi", "dimache"));
 		dancing.setEquipments(Set.of(parquet, mirrors));
 		dancing.setMaxCapacity(50);
 		dancing.setPrice(25);
@@ -106,32 +105,22 @@ public class DataInitializer {
 		Booking booking = new Booking();
 		booking.setClient(admin);
 		booking.setRoom(dancing);
-		booking.setBegin(DateUtils.parseDateTime("01/01/2020 10:00"));
-		booking.setEnd(DateUtils.parseDateTime("01/01/2020 11:00"));
-		booking.setWeekRepetition(0);
-		booking.calculatePrice();
-		booking.setStatus(BookingStatus.FINISHED);
+		TimeSlot slot1 = new TimeSlot();
+		slot1.setStart(DateUtils.parseDateTime("01/01/2020 10:00"));
+		slot1.setEnd(DateUtils.parseDateTime("01/01/2020 11:00"));
+		booking.setSlots(Set.of(slot1));
 
-		// Reservation en cours confirmé
+
 		Booking booking2 = new Booking();
 		booking2.setClient(admin);
 		booking2.setRoom(dancing);
-		booking2.setBegin(DateUtils.parseDateTime("01/07/2020 16:00"));
-		booking2.setEnd(DateUtils.parseDateTime("09/07/2020 17:00"));
-		booking2.setWeekRepetition(1);
-		booking2.calculatePrice();
-		booking2.setStatus(BookingStatus.CONFIRMED);
+		TimeSlot slot2 = new TimeSlot();
+		slot2.setStart(DateUtils.parseDateTime("01/07/2020 16:00"));
+		slot2.setEnd(DateUtils.parseDateTime("09/07/2020 17:00"));
+		booking2.setSlots(Set.of(slot2));
 		
-		// Non confirmé
-		Booking booking3 = new Booking();
-		booking3.setClient(admin);
-		booking3.setRoom(dancing);
-		booking3.setBegin(DateUtils.parseDateTime("01/08/2020 18:00"));
-		booking3.setEnd(DateUtils.parseDateTime("01/08/2020 19:00"));
-		booking3.setWeekRepetition(0);
-		booking3.calculatePrice();
-		booking3.setStatus(BookingStatus.PENDING);
+
 		
-		bookingRepository.saveAll(Set.of(booking, booking2, booking3));
+		bookingRepository.saveAll(Set.of(booking, booking2));
 	}
 }

@@ -1,12 +1,12 @@
 package project.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import project.exceptions.ForbiddenException;
@@ -22,10 +22,11 @@ public class AdminController {
 	@Autowired
 	AdminService adminService;
 	
-	@PutMapping("/lock")
-	public ResponseEntity<User> lockUserAccount(@RequestParam Long userId, @AuthenticationPrincipal User admin) {
+	@ResponseBody
+	@PutMapping
+	public User update(@RequestParam Long userId, @RequestParam(required = false) boolean locked, @AuthenticationPrincipal User admin) {
 		if(admin == null || admin.getId() == userId) throw new ForbiddenException();
-		return ResponseEntity.ok(adminService.lockUserAccount(userId));
+		return adminService.update(userId, locked);
 	}
 	
 }
