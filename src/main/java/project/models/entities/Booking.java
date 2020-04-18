@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -15,10 +16,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,13 +49,16 @@ public class Booking {
 	
 	private int weekRepetition;
 	
+	@ManyToMany(cascade = CascadeType.PERSIST)
+	private Set<TimeSlot> slots;
+	
 	private double price;
 	
-	@JsonIgnore
+	@JsonIgnoreProperties("rooms")
 	@ManyToOne
 	private User client;
 	
-	@JsonIgnore
+	@JsonIgnoreProperties("bookings")
 	@ManyToOne
 	private Room room;
 	

@@ -153,7 +153,6 @@ public class RoomService {
 
 				// si la date est déjà réservée
 				if (booking.getDates().contains(day)) {
-					System.out.println(booking.getEnd());
 					// on vérifie que les heures de début et de fin soient disponibles
 					if (start.equals(booking.getBegin().toLocalTime()) || end.equals(booking.getEnd().toLocalTime())) {
 						return false;

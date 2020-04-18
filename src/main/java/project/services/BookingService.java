@@ -11,7 +11,10 @@ import project.exceptions.ForbiddenException;
 import project.exceptions.NotFoundException;
 import project.models.BookingStatus;
 import project.models.entities.Booking;
+import project.models.entities.Room;
+import project.models.entities.TimeSlot;
 import project.repositories.BookingRepository;
+import project.repositories.RoomRepository;
 import project.utils.DateUtils;
 
 @Service
@@ -26,6 +29,30 @@ public class BookingService {
 	@Autowired
 	private UserService userService;
 
+	public Booking create(Booking booking) {
+		if(!isBookable(booking)) {
+			throw new ConflictException("La salle n'est pas disponible");
+		}
+		return bookingRepository.save(booking);
+	}
+	
+	public boolean isBookable(Booking booking){
+		Room room = roomService.findById(booking.getRoom().getId());
+		for(TimeSlot slot: booking.getSlots()) {
+			if(!room.getAvailableDays().contains(slot.getStart().getDayOfWeek())) {
+				for(Booking b: room.getBookings()) {
+					for(TimeSlot roomSlot: b.getSlots()) {
+						if(slot.getStart().equals(roomSlot.getStart()) || slot.getEnd().equals(roomSlot.getEnd())) {
+							return false;
+						} else if(slot.getStart().isAfter(roomSlot.getStart()) && slot.getEnd().isBefore(roomSlot.getEnd())) {
+							return false;
+						}
+					}
+				}
+			} else return false;
+		}
+		return true;
+	}
 	public Booking save(Long roomId, Booking booking, Long clientId) throws ConflictException {
 		// définir le client, la salle et calculer le prix
 		booking.setClient(userService.findById(clientId));

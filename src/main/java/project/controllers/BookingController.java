@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import project.exceptions.ForbiddenException;
@@ -35,6 +37,16 @@ public class BookingController {
 		return ResponseEntity.ok(bookingService.findById(id));
 	}
 	
+
+
+
+	
+	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
+	public  @ResponseBody Booking newOne(@RequestBody Booking booking) {
+		return this.bookingService.create(booking);
+	}
+	
 	@PostMapping("/rooms/{roomId}")
 	public ResponseEntity<Booking> create(@AuthenticationPrincipal User user, @PathVariable Long roomId,
 			@RequestBody Booking booking) {
@@ -44,7 +56,7 @@ public class BookingController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.save(roomId, booking, user.getId()));
 	}
 
-	@GetMapping("/rooms/{roomId}/available")
+	@GetMapping("/rooms/{roomId}/")
 	public ResponseEntity<BooleanResponse> checkAvailable(@AuthenticationPrincipal User user, @PathVariable Long roomId,
 			@RequestParam String begin, @RequestParam String end, @RequestParam int weekRepetition) {
 		if (user == null) {
