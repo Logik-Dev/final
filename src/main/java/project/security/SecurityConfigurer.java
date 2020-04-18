@@ -37,7 +37,8 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 			.csrf().disable().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/api/rooms/**").permitAll()
 				.antMatchers("/api/rooms", "/api/rooms/**").authenticated()
-				.antMatchers("/api/users/**").permitAll()
+				.antMatchers("/api/users/login", "/api/users?*").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/users").permitAll()
 				.antMatchers("/api/admin/**").hasAuthority("ADMIN")
 				.anyRequest().authenticated()
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

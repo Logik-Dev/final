@@ -27,7 +27,7 @@ public class CommentController {
 	@ResponseBody
 	@PostMapping
 	public Comment create(@RequestBody Comment comment, @AuthenticationPrincipal User user){
-		return commentService.create(comment);
+		return commentService.create(comment, user);
 	}
 
 	

@@ -40,6 +40,12 @@ public class RoomController {
 		return roomService.create(room);
 	}
 	
+	@GetMapping
+	public List<Room> all(@RequestParam(required = false) String city,
+			@RequestParam(required = false) String day, @RequestParam(required = false) Integer zipCode) {
+		return roomService.find(city, zipCode, day);
+	}
+	
 	@ResponseBody
 	@PostMapping("/{id}/photos")
 	public Room addPhotos(@PathVariable Long id, @AuthenticationPrincipal User user,
@@ -53,11 +59,6 @@ public class RoomController {
 		return roomService.findById(id);
 	}
 	
-	@GetMapping
-	public List<Room> all(@RequestParam(required = false) String city,
-			@RequestParam(required = false) String day, @RequestParam(required = false) Integer zipCode) {
-		return roomService.find(city, zipCode, day);
-	}
 	
 	@GetMapping("/users/{id}")
 	public List<Room> allByUser( @PathVariable Long id){
@@ -85,7 +86,7 @@ public class RoomController {
 		return roomService.update(room, user.getId());
 	}
 	
-	@ResponseStatus(code = HttpStatus.PARTIAL_CONTENT, reason = "Salle supprimée")
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
 		roomService.delete(id);

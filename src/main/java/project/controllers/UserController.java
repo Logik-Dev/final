@@ -6,9 +6,9 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import project.exceptions.ForbiddenException;
 import project.models.entities.User;
 import project.services.UserService;
 
@@ -30,34 +30,40 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
-		
-	@GetMapping("/{id}")
-	public @ResponseBody User findById(@PathVariable Long id, @AuthenticationPrincipal User user) throws ForbiddenException{
-		if(user == null || id != user.getId()) {
-			throw new ForbiddenException();
-		}
-		return userService.findById(id);
-	}
 	
-	@GetMapping("/exists")
-	public @ResponseBody Map<String, Boolean> userExists(@RequestParam String email){
-		return Collections.singletonMap("result", userService.emailExists(email));
-	}
-	
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping
-	public ResponseEntity<User> create(@RequestBody User user) {
-		return ResponseEntity.status(HttpStatus.CREATED).body((userService.save(user)));
+	public User create(@RequestBody User user) {
+		return userService.create(user);
 	}
 	
+	@ResponseBody 
 	@PostMapping("/login")
-	public @ResponseBody Map<String, String> login(@RequestBody User user) {
+	public Map<String, String> login(@RequestBody User user) {
 		return Collections.singletonMap("jwt", userService.authenticate(user));
 	}
 	
-	@PutMapping
-	public ResponseEntity<User> update(@RequestBody User user, @AuthenticationPrincipal User loggedUser) throws ForbiddenException{
-		if(user == null || user.getId() != loggedUser.getId()) throw new ForbiddenException();
-		return ResponseEntity.ok(userService.update(user));
+	@ResponseBody
+	@GetMapping("/{id}")
+	public User findById(@PathVariable Long id) {
+		return userService.findById(id);
 	}
-
+	
+	@ResponseBody
+	@GetMapping
+	public Map<String, Boolean> emailExists(@RequestParam String email){
+		return Collections.singletonMap("result", userService.emailExists(email));
+	}
+	
+	@PutMapping
+	public User update(@RequestBody User user, @AuthenticationPrincipal User loggedUser) {
+		return userService.update(user, loggedUser);
+	}
+	
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@DeleteMapping("/{id}")
+	public void delete(@PathVariable Long id, @AuthenticationPrincipal User loggedUser) {
+		userService.delete(id, loggedUser);
+	}
+	
 }
