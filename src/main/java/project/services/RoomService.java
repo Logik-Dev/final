@@ -38,7 +38,7 @@ public class RoomService {
 	 *                            propriétaire de la salle
 	 */
 	public Room create(Room room, User user) throws ForbiddenException {
-		if (user.getId() != room.getOwner().getId())
+		if (user == null || user.getId() != room.getOwner().getId())
 			throw new ForbiddenException();
 		return roomRepository.save(room);
 	}
@@ -52,9 +52,9 @@ public class RoomService {
 	 * @return la liste des salles correspondant aux critères
 	 */
 	public List<Room> findAll(String city, Integer zipCode, String day) {
-		if (city != null) {
+		if (city != null && zipCode != null) {
 			if (day != null) {
-				return findByCityAndDay(city, day);
+				return findByCityAndDay(city, zipCode, day);
 
 			} else {
 				return findByCity(city, zipCode);
@@ -129,9 +129,9 @@ public class RoomService {
 	 * @return la liste des salles correspondantes
 	 * @throws RoomNotFoundException si la liste est vide
 	 */
-	private List<Room> findByCityAndDay(String city, String day) throws RoomNotFoundException {
-		List<Room> rooms = roomRepository.findByCityAndDay(city,
-				DateUtils.parseDate(day).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE));
+	private List<Room> findByCityAndDay(String city, Integer zipCode, String date) throws RoomNotFoundException {
+		List<Room> rooms = roomRepository.findByCityAndDay(city, zipCode,
+				DateUtils.parseDate(date).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE));
 		if (rooms.isEmpty()) {
 			throw new RoomNotFoundException();
 		}
@@ -160,7 +160,7 @@ public class RoomService {
 	 * @throws ForbiddenException si l'utilisateur n'est pas le propriétaire
 	 */
 	public Room update(Room room, User user) throws ForbiddenException {
-		if (user.getId() != room.getOwner().getId())
+		if (user == null || user.getId() != room.getOwner().getId())
 			throw new ForbiddenException();
 		return roomRepository.save(room);
 	}

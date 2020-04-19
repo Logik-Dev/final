@@ -38,6 +38,7 @@ public class Photo {
 	@JsonIgnoreProperties("photos")
 	@ManyToOne
 	private Room room;
+
 	
 	
 }

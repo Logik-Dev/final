@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
@@ -22,21 +21,23 @@ import lombok.Setter;
 @Entity
 @NoArgsConstructor
 public class Booking {
-	
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@ManyToMany(cascade = CascadeType.PERSIST)
 	private Set<TimeSlot> slots;
-	
+
 	private double price;
-	
-	@JsonIgnore
+
 	@ManyToOne
+	@JsonIgnoreProperties("bookings")
 	private User client;
-	
-	@JsonIgnoreProperties({"bookings", "owner", "comments"})
+
 	@ManyToOne
+	@JsonIgnoreProperties(value = { "bookings", "owner", "comments" }, allowSetters = true)
 	private Room room;
-	
+
+
 }

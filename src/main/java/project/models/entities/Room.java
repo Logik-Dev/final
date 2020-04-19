@@ -15,7 +15,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
@@ -58,12 +60,13 @@ public class Room {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
 	private Set<Photo> photos;
 	
-	@JsonIgnore
+	@JsonIgnoreProperties({"rooms", "bookings"})
 	@ManyToOne
 	private User owner;
 	
-	@JsonIgnoreProperties("room")
+	@JsonIgnoreProperties({"room", "client"})
 	@OneToMany(mappedBy = "room")
+	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	private Set<Booking> bookings;
 	
 	@JsonIgnoreProperties("room")
@@ -79,7 +82,8 @@ public class Room {
 			}
 			rating /= comments.size() + 1;
 		}
-
 	}
+
+	
 
 }

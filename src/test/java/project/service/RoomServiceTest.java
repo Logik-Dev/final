@@ -1,22 +1,12 @@
 package project.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import project.exceptions.NotFoundException;
 import project.models.entities.Booking;
 import project.models.entities.Room;
 import project.repositories.RoomRepository;
@@ -41,7 +31,7 @@ class RoomServiceTest {
 		room.setBookings(Set.of(booking));
 		
 	}
-
+	/**
 	@Test
 	void testSaveOrUpdate() {
 		// arrange
@@ -67,7 +57,7 @@ class RoomServiceTest {
 		assertEquals(1, result.getId());
 		assertThrows(NotFoundException.class, () -> roomService.findById(Long.valueOf(2)));
 	}
-	/**
+	
 	@Test
 	void testFindByCity() {
 		// arrange
@@ -97,7 +87,7 @@ class RoomServiceTest {
 		assertThrows(NotFoundException.class,
 				() -> roomService.findByCityAndDate("nantes", "01/01/2020", "10:00", "11:00")); // -> Heure déjà réservée
 	}
-	*/
+	
 	@Test
 	void testFindAll() {
 		// arrange
@@ -118,6 +108,6 @@ class RoomServiceTest {
 		// assert
 		assertThrows(NotFoundException.class, () -> roomService.findAll());
 	}
-
+	*/
 
 }

@@ -29,6 +29,7 @@ public class BookingController {
 	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public Booking create(@RequestBody Booking booking) {
+		System.out.println(booking);
 		return this.bookingService.create(booking);
 	}
 	

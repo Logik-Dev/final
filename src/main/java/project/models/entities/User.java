@@ -22,6 +22,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -61,10 +62,11 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Set<Role> roles = Set.of(Role.USER);
 	
-	@JsonIgnore
+	@JsonIgnoreProperties("owner")
 	@OneToMany(mappedBy = "owner")
 	private Set<Room> rooms;
 	
+	@JsonIgnoreProperties("client")
 	@OneToMany(mappedBy = "client")
 	private Set<Booking> bookings;
 	
