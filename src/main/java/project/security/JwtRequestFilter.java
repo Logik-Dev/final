@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import project.models.entities.User;
 import project.services.UserService;
 import project.utils.JwtUtil;
 
@@ -45,7 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			// Si on bien un email et aucune authentification dans le contexte récuperer
 			// l'utilisateur et vérifier la validité du token
 			if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-				User user = userService.findByEmail(email);
+				UserDetails user = userService.loadUserByUsername(email);
 				if (jwtUtil.validateToken(jwt, user)) {
 					// Tout est ok on authentifie l'utilisateur
 					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(

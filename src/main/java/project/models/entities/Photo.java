@@ -10,6 +10,7 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Formula;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,12 +30,12 @@ public class Photo {
 	private byte[] file;
 	
 	@JsonIgnore
-	private String baseUrl = "http://localhost:8080/api/rooms/photos/";
+	private String baseUrl = "http://localhost:8080/api/photos/";
 	
 	@Formula("concat(base_url,'', id)")
 	private String url;
 	
-	@JsonIgnore
+	@JsonIgnoreProperties("photos")
 	@ManyToOne
 	private Room room;
 	

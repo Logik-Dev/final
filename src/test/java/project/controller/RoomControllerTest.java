@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import project.controllers.RoomController;
-import project.exceptions.NotFoundException;
+import project.exceptions.RoomNotFoundException;
 import project.models.entities.Address;
 import project.models.entities.Room;
 import project.services.RoomService;
@@ -87,7 +87,7 @@ class RoomControllerTest {
 
 		mvc.perform(get(URL)).andExpect(ok).andExpect(matcher);
 
-		when(roomService.findAll()).thenThrow(new NotFoundException());
+		when(roomService.findAll()).thenThrow(new RoomNotFoundException());
 
 		mvc.perform(get(URL)).andExpect(notFound);
 	}

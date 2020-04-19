@@ -63,10 +63,13 @@ public class UserService implements UserDetailsService {
 	/**
 	 * Rechercher un utilisateur par son id
 	 * @param id l'identifiant unique de l'utilisateur à trouver
+	 * @param user l'utilisateur authentifié
 	 * @return un objet de type User 
 	 * @throws UserNotFoundException si l'utilisateur est introuvable
+	 * @throws ForbiddenException si l'id ne correspond pas à celui de l'utilisateur
 	 */
-	public User findById(Long id) throws UserNotFoundException {
+	public User findById(Long id, User user) throws UserNotFoundException, ForbiddenException {
+		if(user.getId() != id) throw new ForbiddenException();
 		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 	}
 
@@ -76,7 +79,7 @@ public class UserService implements UserDetailsService {
 	 * @return un objet de type User
 	 * @throws UserNotFoundException si l'utilisateur est introuvable
 	 */
-	public User findByEmail(String email) throws UserNotFoundException {
+	private User findByEmail(String email)throws UserNotFoundException{
 		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new UserNotFoundException());
 		return user;

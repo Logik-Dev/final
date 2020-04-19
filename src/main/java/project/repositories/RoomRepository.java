@@ -1,6 +1,5 @@
 package project.repositories;
 
-import java.time.DayOfWeek;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,8 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import project.models.entities.Equipment;
 import project.models.entities.Photo;
 import project.models.entities.Room;
+import project.models.entities.RoomType;
 
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
@@ -23,6 +24,12 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 	Optional<Photo> findPhotoById(@Param("id") Long id);
 
 	@Query("SELECT r FROM Room r JOIN r.availableDays d WHERE r.address.city = :city AND d = :day")
-	List<Room> findByCityAndDay(@Param("city") String city, @Param("day") DayOfWeek day);
+	List<Room> findByCityAndDay(@Param("city") String city, @Param("day") String day);
+	
+	@Query("SELECT e FROM Equipment e")
+	List<Equipment> findAllEquipments();
+	
+	@Query("SELECT t FROM RoomType t")
+	List<RoomType> findAllRoomTypes();
 
 }

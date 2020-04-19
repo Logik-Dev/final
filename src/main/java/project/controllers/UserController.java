@@ -45,8 +45,8 @@ public class UserController {
 	
 	@ResponseBody
 	@GetMapping("/{id}")
-	public User findById(@PathVariable Long id) {
-		return userService.findById(id);
+	public User findById(@PathVariable Long id, @AuthenticationPrincipal User user) {
+		return userService.findById(id, user);
 	}
 	
 	@ResponseBody

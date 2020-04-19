@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -25,9 +26,9 @@ public class JwtUtil {
 				.signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
 	}
 	
-	public Boolean validateToken(String token, User user) {
+	public Boolean validateToken(String token, UserDetails user) {
 		final String email = extractEmail(token);
-		return (email.equals(user.getEmail()) && !isTokenExpired(token));
+		return (email.equals(user.getUsername()) && !isTokenExpired(token));
 		
 	}
 	

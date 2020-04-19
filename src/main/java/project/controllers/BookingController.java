@@ -34,13 +34,13 @@ public class BookingController {
 	
 	@ResponseBody
 	@GetMapping("/{id}")
-	public Booking read(@PathVariable Long id) {
-		return bookingService.get(id);
+	public Booking findById(@PathVariable Long id) {
+		return bookingService.findById(id);
 	}
 	
 	@GetMapping("/rooms/{roomId}")
-	public List<Booking> all(@PathVariable Long roomId) {
-		return bookingService.all(roomId);
+	public List<Booking> findByRoom(@PathVariable Long roomId) {
+		return bookingService.findByRoom(roomId);
 	}
 
 }

@@ -1,6 +1,5 @@
 package project.controllers;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import project.models.entities.Equipment;
 import project.models.entities.Room;
@@ -34,56 +32,45 @@ public class RoomController {
 	@Autowired
 	private RoomService roomService;
 
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping
 	@ResponseBody
 	public Room create(@RequestBody Room room, @AuthenticationPrincipal User user) {
-		return roomService.create(room);
+		return roomService.create(room, user);
 	}
 	
 	@GetMapping
 	public List<Room> all(@RequestParam(required = false) String city,
 			@RequestParam(required = false) String day, @RequestParam(required = false) Integer zipCode) {
-		return roomService.find(city, zipCode, day);
+		return roomService.findAll(city, zipCode, day);
+	}
+	
+	@GetMapping("/users/{id}")
+	public List<Room> allByUser(@PathVariable Long id){
+		return roomService.findByUserId(id);
 	}
 	
 	@ResponseBody
-	@PostMapping("/{id}/photos")
-	public Room addPhotos(@PathVariable Long id, @AuthenticationPrincipal User user,
-			@RequestParam MultipartFile files[]) throws IOException {
-		return roomService.addPhotos(id, files, user.getId());
-	}
-
-	@ResponseBody
 	@GetMapping("/{id}")
-	public Room read(@PathVariable Long id) {
+	public Room findById(@PathVariable Long id) {
 		return roomService.findById(id);
 	}
 	
 	
-	@GetMapping("/users/{id}")
-	public List<Room> allByUser( @PathVariable Long id){
-		return roomService.findByUserId(id);
-	}
-	
-	@GetMapping(value = "/photos/{id}", produces = "image/jpg")
-	public byte[] readPhoto(@PathVariable Long id) {
-		return roomService.getPhoto(id);
-	}
-
 	@GetMapping("/types")
 	public List<RoomType> allTypes() {
-		return roomService.getTypes();
+		return roomService.allTypes();
 	}
 
 	@GetMapping("/equipments")
 	public List<Equipment> allEquipments() {
-		return roomService.getEquipments();
+		return roomService.allEquipments();
 	}
 	
 	@ResponseBody
 	@PutMapping
 	public Room updateRoom(@RequestBody Room room, @AuthenticationPrincipal User user) {
-		return roomService.update(room, user.getId());
+		return roomService.update(room, user);
 	}
 	
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
