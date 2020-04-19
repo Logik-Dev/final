@@ -40,6 +40,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/users/login").permitAll()
 				.regexMatchers("/api/users\\?.+").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/users").permitAll()
+				.antMatchers("/api/photos/**").permitAll()
 				.antMatchers("/api/admin/**").hasAuthority("ADMIN")
 				.anyRequest().authenticated()
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
