@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,15 +33,14 @@ public class RoomController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping
-	@ResponseBody
 	public Room create(@RequestBody Room room, @AuthenticationPrincipal User user) {
 		return roomService.create(room, user);
 	}
 	
 	@GetMapping
 	public List<Room> all(@RequestParam(required = false) String city,
-			@RequestParam(required = false) String day, @RequestParam(required = false) Integer zipCode) {
-		return roomService.findAll(city, zipCode, day);
+			@RequestParam(required = false) String date, @RequestParam(required = false) Integer zipCode) {
+		return roomService.findAll(city, zipCode, date);
 	}
 	
 	@GetMapping("/users/{id}")
@@ -50,7 +48,6 @@ public class RoomController {
 		return roomService.findByUserId(id);
 	}
 	
-	@ResponseBody
 	@GetMapping("/{id}")
 	public Room findById(@PathVariable Long id) {
 		return roomService.findById(id);
@@ -67,7 +64,6 @@ public class RoomController {
 		return roomService.allEquipments();
 	}
 	
-	@ResponseBody
 	@PutMapping
 	public Room updateRoom(@RequestBody Room room, @AuthenticationPrincipal User user) {
 		return roomService.update(room, user);

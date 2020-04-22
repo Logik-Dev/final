@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,19 +36,16 @@ public class UserController {
 		return userService.create(user);
 	}
 	
-	@ResponseBody 
 	@PostMapping("/login")
 	public Map<String, String> login(@RequestBody User user) {
 		return Collections.singletonMap("jwt", userService.authenticate(user));
 	}
 	
-	@ResponseBody
 	@GetMapping("/{id}")
 	public User findById(@PathVariable Long id, @AuthenticationPrincipal User user) {
 		return userService.findById(id, user);
 	}
 	
-	@ResponseBody
 	@GetMapping
 	public Map<String, Boolean> emailExists(@RequestParam String email){
 		return Collections.singletonMap("result", userService.emailExists(email));

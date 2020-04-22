@@ -72,7 +72,7 @@ public class BookingService {
 		Room room = roomService.findById(booking.getRoom().getId());
 		for (TimeSlot slot : booking.getSlots()) {
 			String day = slot.getStart().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE);
-			if (room.getAvailableDays().contains(day)) {
+			if (!room.getAvailableDays().contains(day)) {
 				throw new DayUnavailableException(day);
 			}
 			for (Booking b : room.getBookings()) {

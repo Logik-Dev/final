@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,14 +25,12 @@ public class BookingController {
 	private BookingService bookingService;
 	
 	@PostMapping
-	@ResponseBody
 	@ResponseStatus(HttpStatus.CREATED)
 	public Booking create(@RequestBody Booking booking) {
 		System.out.println(booking);
 		return this.bookingService.create(booking);
 	}
 	
-	@ResponseBody
 	@GetMapping("/{id}")
 	public Booking findById(@PathVariable Long id) {
 		return bookingService.findById(id);
