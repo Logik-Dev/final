@@ -1,5 +1,6 @@
 package project.models.entities;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -51,14 +52,14 @@ public class Room {
 	private RoomType type;
 	
 	@ManyToMany
-	private Set<Equipment> equipments;
+	private Set<Equipment> equipments = new HashSet<Equipment>();
 	
 	@Column(columnDefinition = "tinyint default 5")
 	private int rating = 5;
 	
 	@JsonIgnoreProperties("room")
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
-	private Set<Photo> photos;
+	private Set<Photo> photos = new HashSet<Photo>();
 	
 	@JsonIgnoreProperties({"rooms", "bookings"})
 	@ManyToOne
@@ -67,11 +68,11 @@ public class Room {
 	@JsonIgnoreProperties({"room", "client"})
 	@OneToMany(mappedBy = "room")
 	@OnDelete(action = OnDeleteAction.NO_ACTION)
-	private Set<Booking> bookings;
+	private Set<Booking> bookings = new HashSet<Booking>();
 	
 	@JsonIgnoreProperties("room")
 	@OneToMany(mappedBy = "room")
-	private Set<Comment> comments;
+	private Set<Comment> comments = new HashSet<Comment>();
 	
 	@PostLoad
 	private void calculateRating() {

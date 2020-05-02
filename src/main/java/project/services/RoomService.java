@@ -51,7 +51,10 @@ public class RoomService {
 	 * @param day     le jour souhaité
 	 * @return la liste des salles correspondant aux critères
 	 */
-	public List<Room> findAll(String city, Integer zipCode, String day) {
+	public List<Room> findAll(String city, Integer zipCode, String day, Double lat, Double lon) {
+		if(lat != null && lon != null) {
+			return roomRepository.findByCoordinates(lat, lon);
+		}
 		if (city != null && zipCode != null) {
 			if (day != null) {
 				return findByCityAndDay(city, zipCode, day);

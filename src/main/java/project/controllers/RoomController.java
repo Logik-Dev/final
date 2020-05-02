@@ -36,24 +36,24 @@ public class RoomController {
 	public Room create(@RequestBody Room room, @AuthenticationPrincipal User user) {
 		return roomService.create(room, user);
 	}
-	
+
 	@GetMapping
-	public List<Room> all(@RequestParam(required = false) String city,
-			@RequestParam(required = false) String date, @RequestParam(required = false) Integer zipCode) {
-		return roomService.findAll(city, zipCode, date);
+	public List<Room> all(@RequestParam(required = false) String city, @RequestParam(required = false) String date,
+			@RequestParam(required = false) Integer zipCode, @RequestParam(required = false) Double lat,
+			@RequestParam(required = false) Double lon) {
+		return roomService.findAll(city, zipCode, date, lat, lon);
 	}
-	
+
 	@GetMapping("/users/{id}")
-	public List<Room> allByUser(@PathVariable Long id){
+	public List<Room> allByUser(@PathVariable Long id) {
 		return roomService.findByUserId(id);
 	}
-	
+
 	@GetMapping("/{id}")
 	public Room findById(@PathVariable Long id) {
 		return roomService.findById(id);
 	}
-	
-	
+
 	@GetMapping("/types")
 	public List<RoomType> allTypes() {
 		return roomService.allTypes();
@@ -63,16 +63,16 @@ public class RoomController {
 	public List<Equipment> allEquipments() {
 		return roomService.allEquipments();
 	}
-	
+
 	@PutMapping
 	public Room updateRoom(@RequestBody Room room, @AuthenticationPrincipal User user) {
 		return roomService.update(room, user);
 	}
-	
+
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
 		roomService.delete(id);
 	}
-	
+
 }

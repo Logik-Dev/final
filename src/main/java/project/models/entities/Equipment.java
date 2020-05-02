@@ -17,12 +17,5 @@ public class Equipment {
 	
 	@Id 
 	private String id;
-
-	@Override
-	public String toString() {
-		return "Equipment [id=" + id + "]";
-	}
-	
-	
 	
 }

@@ -1,5 +1,6 @@
 package project.models.entities;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -27,7 +28,7 @@ public class Booking {
 	private Long id;
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
-	private Set<TimeSlot> slots;
+	private Set<TimeSlot> slots = new HashSet<TimeSlot>();
 
 	private double price;
 

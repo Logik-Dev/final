@@ -93,9 +93,9 @@ public class DataInitializer {
 			// Création de l'adresse dancing
 			Address address = new Address();
 			address.setCity("Achères");
-			address.setLabel("2 Allée andré Chénier");
-			address.setLatitude(48.505015);
-			address.setLongitude(2.5646454);
+			address.setLabel("2 Allée Andre de Chenier");
+			address.setLatitude(48.956877);
+			address.setLongitude(2.06249);
 			address.setZipCode(78260);
 
 			// Création de la salle dancing
