@@ -29,14 +29,14 @@ public class PhotoController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping("/rooms/{roomId}")
-	public Map<String, String> create(@RequestParam MultipartFile[] files, @PathVariable Long roomId,
+	public Map<String, String> create(@RequestParam MultipartFile[] files, @PathVariable int roomId,
 			@AuthenticationPrincipal User user) {
 		photoService.create(files, roomId, user);
 		return Collections.singletonMap("result", "Photos enregistrées");
 	}
 
 	@GetMapping(value = "/{id}", produces = "image/jpg")
-	public byte[] findById(@PathVariable Long id) {
+	public byte[] findById(@PathVariable int id) {
 		return photoService.findById(id);
 	}
 

@@ -12,19 +12,19 @@ import project.models.entities.Photo;
 import project.models.entities.Room;
 import project.models.entities.RoomType;
 
-public interface RoomRepository extends JpaRepository<Room, Long> {
+public interface RoomRepository extends JpaRepository<Room, Integer> {
 
 	@Query("SELECT r FROM Room r WHERE r.address.city = :city AND r.address.zipCode = :zipCode")
 	List<Room> findByCity(@Param("city") String city, @Param("zipCode") int zipCode);
 
 	@Query("SELECT r FROM Room r WHERE r.owner.id = :id")
-	List<Room> findByUser(@Param("id") Long id);
+	List<Room> findByUser(@Param("id") int id);
 
 	@Query("SELECT p FROM Photo p WHERE p.id = :id")
-	Optional<Photo> findPhotoById(@Param("id") Long id);
+	Optional<Photo> findPhotoById(@Param("id") int id);
 
 	@Query("SELECT r FROM Room r JOIN r.availableDays d WHERE r.address.city = :city AND d = :day AND r.address.zipCode = :zipCode")
-	List<Room> findByCityAndDay(@Param("city") String city, @Param("zipCode") Integer zipCode,
+	List<Room> findByCityAndDay(@Param("city") String city, @Param("zipCode") int zipCode,
 			@Param("day") String day);
 
 	@Query("SELECT e FROM Equipment e")

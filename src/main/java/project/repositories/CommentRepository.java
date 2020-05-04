@@ -6,8 +6,8 @@ import org.springframework.data.repository.query.Param;
 
 import project.models.entities.Comment;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Integer> {
 	
 	@Query("SELECT count(c) > 0 FROM Comment c WHERE c.room.id = :roomId AND c.author.id = :authorId")
-	public boolean hasComment(@Param("roomId") Long roomId, @Param("authorId") Long authorId);
+	public boolean hasComment(@Param("roomId") int roomId, @Param("authorId") int authorId);
 }

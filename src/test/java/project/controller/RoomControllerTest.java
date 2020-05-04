@@ -26,6 +26,7 @@ import project.controllers.RoomController;
 import project.exceptions.RoomNotFoundException;
 import project.models.entities.Address;
 import project.models.entities.Room;
+import project.models.entities.User;
 import project.services.RoomService;
 
 @SpringBootTest
@@ -41,9 +42,11 @@ class RoomControllerTest {
 	@Autowired
 	private ObjectMapper mapper = new ObjectMapper();
 
-	private static Room room = new Room();
+	private static final Room room = new Room();
+	
+	private static final User user = new User();
 
-	private final String URL = "/api/room";
+	private static final String URL = "/api/rooms";
 
 	private ResultMatcher matcher = jsonPath("$.[0].city").value("nantes");
 
@@ -56,6 +59,12 @@ class RoomControllerTest {
 		Address address = new Address();
 		address.setCity("nantes");
 		room.setAddress(address);
+		user.setId(1);
+	}
+	
+	@Test
+	void testCreate() {
+		when(roomService.create(room, user))
 	}
 	/**
 	@Test

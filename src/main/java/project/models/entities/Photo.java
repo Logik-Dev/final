@@ -23,7 +23,7 @@ import lombok.Setter;
 public class Photo {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private int id;
 	
 	@Lob
 	@JsonIgnore

@@ -42,7 +42,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/{id}")
-	public User findById(@PathVariable Long id, @AuthenticationPrincipal User user) {
+	public User findById(@PathVariable int id, @AuthenticationPrincipal User user) {
 		return userService.findById(id, user);
 	}
 	
@@ -58,7 +58,7 @@ public class UserController {
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id, @AuthenticationPrincipal User loggedUser) {
+	public void delete(@PathVariable int id, @AuthenticationPrincipal User loggedUser) {
 		userService.delete(id, loggedUser);
 	}
 	

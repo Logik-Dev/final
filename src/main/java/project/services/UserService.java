@@ -14,7 +14,6 @@ import project.exceptions.ForbiddenException;
 import project.exceptions.UserNotFoundException;
 import project.models.entities.User;
 import project.repositories.UserRepository;
-import project.utils.JwtUtil;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -26,7 +25,7 @@ public class UserService implements UserDetailsService {
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	private JwtUtil jwtUtil;
+	private JwtService jwtUtil;
 
 	@Autowired
 	AuthenticationManager authManager;
@@ -68,7 +67,7 @@ public class UserService implements UserDetailsService {
 	 * @throws UserNotFoundException si l'utilisateur est introuvable
 	 * @throws ForbiddenException si l'id ne correspond pas à celui de l'utilisateur
 	 */
-	public User findById(Long id, User user) throws UserNotFoundException, ForbiddenException {
+	public User findById(int id, User user) throws UserNotFoundException, ForbiddenException {
 		if(user.getId() != id) throw new ForbiddenException();
 		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 	}
@@ -118,7 +117,7 @@ public class UserService implements UserDetailsService {
 	 * @throws ForbiddenException si l'id de l'objet ne correspond pas à l'id de l'utilisateur connecté
 	 * @throws UserNotFoundException si l'utilisateur à supprimer est introuvable
 	 */
-	public void delete(Long id, User loggedUser) throws ForbiddenException, UserNotFoundException {
+	public void delete(int id, User loggedUser) throws ForbiddenException, UserNotFoundException {
 		if(loggedUser.getId() != id) throw new ForbiddenException();
 		if(!userRepository.existsById(id)) throw new UserNotFoundException();
 		userRepository.deleteById(id);

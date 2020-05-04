@@ -16,12 +16,6 @@ import project.models.entities.User;
 import project.repositories.RoomRepository;
 import project.utils.DateUtils;
 
-/**
- * Service de gestion des salles.
- * 
- * @author Cédric Maunier
- *
- */
 @Service
 public class RoomService {
 
@@ -49,10 +43,12 @@ public class RoomService {
 	 * @param city    la ville ciblée
 	 * @param zipCode le code postal de la ville ciblée
 	 * @param day     le jour souhaité
+	 * @param lat     la latitude de la position de l'utilisateur
+	 * @param lon     la longitude de la position de l'utilisateur
 	 * @return la liste des salles correspondant aux critères
 	 */
 	public List<Room> findAll(String city, Integer zipCode, String day, Double lat, Double lon) {
-		if(lat != null && lon != null) {
+		if (lat != null && lon != null) {
 			return roomRepository.findByCoordinates(lat, lon);
 		}
 		if (city != null && zipCode != null) {
@@ -73,7 +69,7 @@ public class RoomService {
 	 * @return la salle recherchée
 	 * @throws RoomNotFoundException si la salle est introuvable
 	 */
-	public Room findById(Long id) throws RoomNotFoundException {
+	public Room findById(int id) throws RoomNotFoundException {
 		return roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 	}
 
@@ -102,7 +98,7 @@ public class RoomService {
 	 * @return la liste des salles de l'utilisateur
 	 * @throws RoomNotFoundException si la liste est vide
 	 */
-	public List<Room> findByUserId(Long id) throws RoomNotFoundException {
+	public List<Room> findByUserId(int id) throws RoomNotFoundException {
 		List<Room> rooms = this.roomRepository.findByUser(id);
 		if (rooms.isEmpty())
 			throw new RoomNotFoundException();
@@ -174,7 +170,7 @@ public class RoomService {
 	 * @param id l'identifiant de la salle à supprimer
 	 * @throws RoomNotFoundException si la salle est introuvable
 	 */
-	public void delete(Long id) throws RoomNotFoundException {
+	public void delete(int id) throws RoomNotFoundException {
 		if (!roomRepository.existsById(id))
 			throw new RoomNotFoundException();
 		roomRepository.deleteById(id);

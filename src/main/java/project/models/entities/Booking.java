@@ -25,7 +25,7 @@ public class Booking {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private int id;
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
 	private Set<TimeSlot> slots = new HashSet<TimeSlot>();

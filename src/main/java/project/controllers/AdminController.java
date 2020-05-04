@@ -22,7 +22,7 @@ public class AdminController {
 	AdminService adminService;
 	
 	@PutMapping
-	public User update(@RequestParam Long userId, @RequestParam(required = false) boolean locked, @AuthenticationPrincipal User admin) {
+	public User update(@RequestParam int userId, @RequestParam(required = false) boolean locked, @AuthenticationPrincipal User admin) {
 		if(admin == null || admin.getId() == userId) throw new ForbiddenException();
 		return adminService.update(userId, locked);
 	}

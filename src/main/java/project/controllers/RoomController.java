@@ -45,12 +45,12 @@ public class RoomController {
 	}
 
 	@GetMapping("/users/{id}")
-	public List<Room> allByUser(@PathVariable Long id) {
+	public List<Room> allByUser(@PathVariable int id) {
 		return roomService.findByUserId(id);
 	}
 
 	@GetMapping("/{id}")
-	public Room findById(@PathVariable Long id) {
+	public Room findById(@PathVariable int id) {
 		return roomService.findById(id);
 	}
 
@@ -71,7 +71,7 @@ public class RoomController {
 
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id) {
+	public void delete(@PathVariable int id) {
 		roomService.delete(id);
 	}
 

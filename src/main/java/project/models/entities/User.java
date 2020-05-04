@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,7 +40,7 @@ public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private int id;
 
 	private String firstname;
 
@@ -48,7 +49,7 @@ public class User implements UserDetails {
 	@OneToOne(cascade = CascadeType.ALL)
 	private Address address;
 
-	// @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
 
 	private boolean accountNonLocked = true;

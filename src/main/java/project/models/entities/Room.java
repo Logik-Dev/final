@@ -32,7 +32,7 @@ import lombok.Setter;
 public class Room {
 	
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private int id;
 	
 	private double price;
 	

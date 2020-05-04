@@ -17,7 +17,7 @@ import lombok.Setter;
 public class TimeSlot {
 	
 	@Id @GeneratedValue
-	private Long id;
+	private int id;
 	
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
 	private LocalDateTime start;

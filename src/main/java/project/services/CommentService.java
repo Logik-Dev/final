@@ -53,8 +53,8 @@ public class CommentService {
 	 * @throws CommentExistsException si l'auteur a déjà commenté la salle
 	 */
 	private boolean canComment(Comment comment) throws CommentExistsException {
-		Long clientId = comment.getAuthor().getId();
-		Long roomId = comment.getRoom().getId();
+		int clientId = comment.getAuthor().getId();
+		int roomId = comment.getRoom().getId();
 		if (commentRepository.hasComment(roomId, clientId))
 			throw new CommentExistsException();
 		List<Booking> bookings = bookingRepository.findByClientAndRoom(clientId, roomId);

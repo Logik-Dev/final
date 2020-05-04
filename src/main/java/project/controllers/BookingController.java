@@ -32,12 +32,12 @@ public class BookingController {
 	}
 	
 	@GetMapping("/{id}")
-	public Booking findById(@PathVariable Long id) {
+	public Booking findById(@PathVariable int id) {
 		return bookingService.findById(id);
 	}
 	
 	@GetMapping("/rooms/{roomId}")
-	public List<Booking> findByRoom(@PathVariable Long roomId) {
+	public List<Booking> findByRoom(@PathVariable int roomId) {
 		return bookingService.findByRoom(roomId);
 	}
 

@@ -1,9 +1,10 @@
-package project.utils;
+package project.services;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import project.models.entities.User;
 
 @Service
-public class JwtUtil {
+public class JwtService {
 
-	private final String SECRET_KEY = "ultrasecretagent007";
+	@Value("${jwt.secret}")
+	private String SECRET_KEY;
 
 	public String generateToken(User user) {
 		Map<String, Object> payload = new HashMap<>();

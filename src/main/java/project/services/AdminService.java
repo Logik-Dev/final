@@ -13,7 +13,7 @@ public class AdminService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	public User update(Long userId, boolean locked) {
+	public User update(int userId, boolean locked) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new UserNotFoundException());
 		user.setAccountNonLocked(!locked);

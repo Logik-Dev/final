@@ -44,7 +44,7 @@ public class BookingService {
 	 * @return un objet de type Booking
 	 * @throws BookingNotFoundException si la réservation est introuvable
 	 */
-	public Booking findById(Long id) throws BookingNotFoundException {
+	public Booking findById(int id) throws BookingNotFoundException {
 		Booking booking = bookingRepository.findById(id).orElseThrow(() -> new BookingNotFoundException());
 		return booking;
 	}
@@ -55,7 +55,7 @@ public class BookingService {
 	 * @return un objet de type List<Booking> contenant les réservations
 	 * @throws BookingNotFoundException si il n'y a aucune réservation
 	 */
-	public List<Booking> findByRoom(Long roomId) throws BookingNotFoundException {
+	public List<Booking> findByRoom(int roomId) throws BookingNotFoundException {
 		List<Booking> bookings = bookingRepository.findByRoomId(roomId);
 		if (bookings.isEmpty())
 			throw new BookingNotFoundException();
