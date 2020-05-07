@@ -1,4 +1,4 @@
-package project.controller;
+package project.controllers;
 
 import static org.mockito.Mockito.when;
 
@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -21,7 +22,10 @@ import project.services.UserService;
 public class AbstractControllerTest {
 	
     @MockBean
-    private UserService userService;
+    protected UserService userService;
+    
+    @Autowired
+    protected MockMvc mvc;
 
     @Autowired
     private JwtService jwtService;
