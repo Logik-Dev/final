@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -183,7 +184,17 @@ class RoomControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNotFound());
 
     }
+    
+    @Test
+    public void testUpdate() throws Exception {
+    	mockAuthentication();
+    	when(roomService.update(Mockito.any(), Mockito.any())).thenReturn(room);
+    	ResultActions result = mvc.perform(put(URL).headers(getAuthorizationHeaders()).contentType(MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(room)))
+    			.andExpect(status().isOk());
+    	assertOnRoom(result);
+    }
 
+    
     private void assertOnList(ResultActions result) throws Exception {
         result
                 .andExpect(jsonPath("$.[0].id").value(room.getId()))
