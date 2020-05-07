@@ -36,6 +36,7 @@ public class UserController {
 		return userService.create(user);
 	}
 	
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	@PostMapping("/login")
 	public Map<String, String> login(@RequestBody User user) {
 		return Collections.singletonMap("jwt", userService.authenticate(user));
