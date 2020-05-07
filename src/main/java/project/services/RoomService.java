@@ -83,12 +83,36 @@ public class RoomService {
 	}
 
 	/**
+	 * Obtenir la liste des salles par type
+	 * @param type le type de salle souhaitée
+	 * @return une liste de salle
+	 * @throws RoomNotFoundException si aucune salle ne correspond
+	 */
+	public List<Room> findByType(String type) throws RoomNotFoundException {
+		List<Room> rooms = roomRepository.findByType(type);
+		if(rooms.isEmpty()) throw new RoomNotFoundException();
+		return rooms;
+	}
+
+	/**
 	 * Obtenir la liste de tous les équipements
 	 * 
 	 * @return la liste des équipements
 	 */
 	public List<Equipment> allEquipments() {
 		return roomRepository.findAllEquipments();
+	}
+
+	/**
+	 * Obtenir la liste des salles ayant un équipement particulier
+	 * @param equipment l'équipement souhaité
+	 * @return une liste de salle
+	 * @throws RoomNotFoundException si aucune salle ne correspond
+	 */
+	public List<Room> findByEquipment(String equipment) throws RoomNotFoundException {
+		List<Room> rooms = roomRepository.findByEquipment(equipment);
+		if(rooms.isEmpty()) throw new RoomNotFoundException();
+		return rooms;
 	}
 
 	/**
@@ -169,10 +193,14 @@ public class RoomService {
 	 * 
 	 * @param id l'identifiant de la salle à supprimer
 	 * @throws RoomNotFoundException si la salle est introuvable
+	 * @throws ForbiddenException si l'id de l'utilisateur n'est pas celui du propriétaire
 	 */
-	public void delete(int id) throws RoomNotFoundException {
+	public void delete(int id, User user) throws RoomNotFoundException, ForbiddenException {
 		if (!roomRepository.existsById(id))
 			throw new RoomNotFoundException();
+		if(roomRepository.findById(id).get().getOwner().getId() != user.getId()){
+			throw new ForbiddenException();
+		}
 		roomRepository.deleteById(id);
 	}
 

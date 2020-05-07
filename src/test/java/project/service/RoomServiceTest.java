@@ -2,13 +2,17 @@ package project.service;
 
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import project.models.entities.Booking;
 import project.models.entities.Room;
+import project.models.entities.User;
 import project.repositories.RoomRepository;
 import project.services.RoomService;
 
@@ -22,28 +26,31 @@ class RoomServiceTest {
 	private RoomService roomService;
 
 	private static Room room = new Room();
+	private static User user = new User();
 
 	@BeforeAll
 	public static void setUpBeforeClass() throws Exception {
-		room.setId(Long.valueOf(1));
+		//room.setId(Long.valueOf(1));
 		Booking booking = new Booking();
 		booking.setRoom(room);
 		room.setBookings(Set.of(booking));
-		
+		room.setId(1);
+		user.setId(1);
+		room.setOwner(user);
 	}
-	/**
+
 	@Test
 	void testSaveOrUpdate() {
 		// arrange
 		when(roomRepository.save(room)).thenReturn(room);
 
 		// act
-		Room result = roomService.create(room);
+		Room result = roomService.create(room, user);
 
 		// assert
 		assertEquals(1, result.getId());
 	}
-
+	/**
 	@Test
 	void testFindById() {
 		// arrange

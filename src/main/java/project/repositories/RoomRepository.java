@@ -30,8 +30,14 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
 	@Query("SELECT e FROM Equipment e")
 	List<Equipment> findAllEquipments();
 
+	@Query("SELECT r FROM Room r JOIN Equipment e WHERE e.id = :equipment")
+	List<Room> findByEquipment(@Param("equipment") String equipment);
+
 	@Query("SELECT t FROM RoomType t")
 	List<RoomType> findAllRoomTypes();
+
+	@Query("SELECT r FROM Room r WHERE r.type.id = :type")
+	List<Room> findByType(@Param("type") String type);
 
 	@Query("SELECT r FROM Room r WHERE (r.address.latitude < :lat + 0.03 AND r.address.latitude > :lat - 0.03) "
 			+ "AND (r.address.longitude < :lon + 0.03 AND r.address.longitude > :lon - 0.03)")

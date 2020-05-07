@@ -24,7 +24,7 @@ import project.services.UserService;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin("*")
 public class UserController {
 	
 	@Autowired
