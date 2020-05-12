@@ -7,6 +7,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import project.models.Volume;
 
 @Entity
 @Getter
@@ -47,12 +50,22 @@ public class Room {
 	
 	@ElementCollection
 	private Set<String> availableDays;
+	
+	@Enumerated(EnumType.STRING)
+	private Volume maxVolume;
+	
+	@ManyToMany
+	@JsonIgnoreProperties("rooms")
+	private Set<EventType> eventTypes = new HashSet<EventType>();
 		
 	@OneToOne
 	private RoomType type;
 	
-	@ManyToMany
-	private Set<Equipment> equipments = new HashSet<Equipment>();
+	@ManyToMany(cascade = CascadeType.PERSIST)
+	private Set<RoomEquipment> equipments = new HashSet<RoomEquipment>();
+	
+	@ManyToMany(cascade = CascadeType.PERSIST)
+	private Set<RoomEquipment> customEquipments = new HashSet<RoomEquipment>();
 	
 	@Column(columnDefinition = "tinyint default 5")
 	private int rating = 5;

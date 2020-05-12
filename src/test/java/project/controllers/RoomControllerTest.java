@@ -21,9 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import project.exceptions.RoomNotFoundException;
 import project.models.entities.Address;
-import project.models.entities.Equipment;
 import project.models.entities.Room;
-import project.models.entities.RoomType;
 import project.models.entities.User;
 import project.services.RoomService;
 
@@ -71,7 +69,7 @@ class RoomControllerTest extends AbstractControllerTest {
 
     @Test
     public void testFindAll() throws Exception {
-        when(roomService.findAll(null, null, null, null, null)).thenReturn(List.of(room));
+        when(roomService.findAll(Mockito.any())).thenReturn(List.of(room));
 
         ResultActions result = mvc.perform(get(URL).headers(getAuthorizationHeaders()))
                 .andExpect(status().isOk());
@@ -80,7 +78,7 @@ class RoomControllerTest extends AbstractControllerTest {
 
     @Test
     public void testFindAllWithNoResult() throws Exception {
-        when(roomService.findAll(null, null, null, null, null)).thenThrow(RoomNotFoundException.class);
+        when(roomService.findAll(Mockito.any())).thenThrow(RoomNotFoundException.class);
         mvc.perform(get(URL).headers(getAuthorizationHeaders()))
                 .andExpect(status().isNotFound());
     }
@@ -114,52 +112,6 @@ class RoomControllerTest extends AbstractControllerTest {
     public void testFindByIdNoResult() throws Exception {
         when(roomService.findById(room.getId())).thenThrow(RoomNotFoundException.class);
         mvc.perform(get(URL + "/" + room.getId()))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void testFindAllTypes() throws Exception {
-        when(roomService.allTypes()).thenReturn(List.of(new RoomType("type")));
-        mvc.perform(get(URL + "/types"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id").value("type"));
-    }
-
-    @Test
-    public void testFindAllEquipments() throws Exception {
-        when(roomService.allEquipments()).thenReturn(List.of(new Equipment("equipment")));
-        mvc.perform(get(URL + "/equipments"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id").value("equipment"));
-    }
-
-    @Test
-    public void testFindByType() throws Exception {
-        when(roomService.findByType("type")).thenReturn(List.of(room));
-        ResultActions result = mvc.perform(get(URL + "/types/type" ))
-                .andExpect(status().isOk());
-        assertOnList(result);
-    }
-
-    @Test
-    public void testFindByTypeNoResult() throws Exception {
-        when(roomService.findByType("type")).thenThrow(RoomNotFoundException.class);
-        mvc.perform(get(URL + "/types/type"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    public void testFindByEquipment() throws Exception {
-        when(roomService.findByEquipment("equipment")).thenReturn(List.of(room));
-        ResultActions result = mvc.perform(get(URL + "/equipments/equipment"))
-                .andExpect(status().isOk());
-        assertOnList(result);
-    }
-
-    @Test
-    public void testFindByEquipmentNoResult() throws Exception {
-        when(roomService.findByEquipment("equipment")).thenThrow(RoomNotFoundException.class);
-        mvc.perform(get(URL + "/equipments/equipment"))
                 .andExpect(status().isNotFound());
     }
 

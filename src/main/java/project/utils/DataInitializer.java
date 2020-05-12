@@ -9,15 +9,19 @@ import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 import project.models.Role;
+import project.models.Volume;
 import project.models.entities.Address;
 import project.models.entities.Booking;
 import project.models.entities.Equipment;
+import project.models.entities.EventType;
 import project.models.entities.Room;
+import project.models.entities.RoomEquipment;
 import project.models.entities.RoomType;
 import project.models.entities.TimeSlot;
 import project.models.entities.User;
 import project.repositories.BookingRepository;
 import project.repositories.EquipmentRepository;
+import project.repositories.EventTypeRepository;
 import project.repositories.RoomRepository;
 import project.repositories.RoomTypeRepository;
 import project.repositories.UserRepository;
@@ -42,6 +46,9 @@ public class DataInitializer {
 	private BookingRepository bookingRepository;
 
 	@Autowired
+	private EventTypeRepository eventRepository;
+
+	@Autowired
 	private PasswordEncoder encoder;
 
 	@Value("${spring.jpa.hibernate.ddl-auto}")
@@ -54,40 +61,76 @@ public class DataInitializer {
 
 			// Création de l'admin
 			User admin = new User();
-			admin.setFirstname("Cédric");
-			admin.setLastname("Maunier");
+			admin.setFirstname("cédric");
+			admin.setLastname("maunier");
 			admin.setEmail("admin@gmail.com");
+			admin.setPhoneNumber("0633462050");
 			admin.setPassword(encoder.encode("root"));
 			admin.setRoles(Set.of(Role.ADMIN));
 			userRepository.save(admin);
 
 			// Creation de Charlotte
 			User charlotte = new User();
-			charlotte.setFirstname("Charlotte");
-			charlotte.setLastname("Carré");
+			charlotte.setFirstname("charlotte");
+			charlotte.setLastname("carré");
 			charlotte.setEmail("boulet1310@gmail.com");
+			charlotte.setPhoneNumber("0689134566");
 			charlotte.setPassword(encoder.encode("changeme"));
 			userRepository.save(charlotte);
 
 			// Création des types de salle
-			RoomType show = new RoomType("Salle de spectacle");
-			RoomType bar = new RoomType("Bar");
-			RoomType workshop = new RoomType("Atelier");
-			RoomType dancehall = new RoomType("Salle de danse");
-			RoomType cityRoom = new RoomType("Salle municipale");
-			RoomType studio = new RoomType("Studio d'enregistrement");
-			RoomType repetition = new RoomType("Salle de répétition");
-			RoomType unusual = new RoomType("Insolite");
-			RoomType other = new RoomType("Autre");
-			Set<RoomType> allTypes = Set.of(show, bar, workshop, dancehall, cityRoom, studio, repetition, unusual,
+			RoomType show = new RoomType("salle de spectacle");
+			RoomType bar = new RoomType("bar");
+			RoomType workshop = new RoomType("atelier");
+			RoomType dancehall = new RoomType("salle de danse");
+			RoomType cityRoom = new RoomType("salle municipale");
+			RoomType studio = new RoomType("studio d'enregistrement");
+			RoomType repetition = new RoomType("salle de répétition");
+			RoomType unusual = new RoomType("insolite");
+			RoomType other = new RoomType("autre");
+			RoomType rest = new RoomType("restaurant");
+			Set<RoomType> allTypes = Set.of(show, bar, workshop, dancehall, cityRoom, studio, repetition, unusual, rest,
 					other);
 			roomTypeRepository.saveAll(allTypes);
 
+			// Création des types d'évenements
+			EventType anniv = new EventType("Anniversaire");
+			EventType night = new EventType("Soirée");
+			EventType repet = new EventType("Répétition");
+			EventType afterWork = new EventType("AfterWork");
+			EventType seminaire = new EventType("Séminaire");
+			EventType expo = new EventType("Exposition");
+			EventType concert = new EventType("Concert");
+			EventType showEvent = new EventType("Show");
+			EventType diner = new EventType("Diner");
+			EventType artisanat = new EventType("Artisanat");
+			EventType photo = new EventType("Photographie");
+			EventType artistique = new EventType("Artistique");
+
+			Set<EventType> allEvents = Set.of(anniv, night, repet, afterWork, seminaire, expo, concert, showEvent,
+					diner, artisanat, photo, artistique);
+			eventRepository.saveAll(allEvents);
+
 			// Création des équipements
-			Equipment parquet = new Equipment("parquet");
-			Equipment mirrors = new Equipment("miroirs");
-			Equipment mix = new Equipment("console de mixage");
-			Set<Equipment> equipments = Set.of(parquet, mirrors, mix);
+			Equipment proj = new Equipment("materiel de projection");
+			Equipment sono = new Equipment("sono");
+			Equipment vestiaire = new Equipment("vestiaire");
+			Equipment piste = new Equipment("piste de danse");
+			Equipment table = new Equipment("table");
+			Equipment chaise = new Equipment("chaise");
+			Equipment wifi = new Equipment("wifi");
+			Equipment enceinte = new Equipment("enceinte");
+			Equipment micro = new Equipment("micro");
+			Equipment etablie = new Equipment("etabli");
+			Equipment batterie = new Equipment("batterie");
+			Equipment pianoQueue = new Equipment("piano à queue");
+			Equipment pianoDroit = new Equipment("piano droit");
+			Equipment clavier = new Equipment("synthétiseur");
+			Equipment ordi = new Equipment("ordinateur");
+			Equipment platine = new Equipment("platine");
+
+			Set<Equipment> equipments = Set.of(proj, sono, vestiaire, piste, table, chaise, wifi, enceinte, micro, ordi,
+					clavier, etablie, batterie, pianoDroit, pianoQueue, platine);
 			equipmentRepository.saveAll(equipments);
 
 			// Création de l'adresse dancing
@@ -100,9 +143,14 @@ public class DataInitializer {
 
 			// Création de la salle dancing
 			Room dancing = new Room();
-			dancing.setName("Le dancing");
+			dancing.setName("le dancing");
 			dancing.setAvailableDays(Set.of("vendredi", "lundi", "samedi", "dimanche"));
-			dancing.setEquipments(Set.of(parquet, mirrors));
+			dancing.setEventTypes(Set.of(repet));
+			dancing.setMaxVolume(Volume.MOYEN);
+			Set<RoomEquipment> dancingEquipments = Set.of(new RoomEquipment(piste, 1),
+					new RoomEquipment(chaise, 6), new RoomEquipment(enceinte, 2),
+					new RoomEquipment(wifi, 1));
+			dancing.setEquipments(dancingEquipments);
 			dancing.setMaxCapacity(50);
 			dancing.setPrice(25);
 			dancing.setOwner(charlotte);

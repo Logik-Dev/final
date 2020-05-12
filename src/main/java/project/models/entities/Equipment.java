@@ -17,5 +17,6 @@ public class Equipment {
 	
 	@Id 
 	private String id;
+
 	
 }

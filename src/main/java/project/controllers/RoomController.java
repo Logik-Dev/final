@@ -5,11 +5,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
-import project.models.entities.Equipment;
+import project.models.SearchRoomParams;
 import project.models.entities.Room;
-import project.models.entities.RoomType;
 import project.models.entities.User;
 import project.services.RoomService;
 
@@ -30,8 +39,10 @@ public class RoomController {
 	@GetMapping
 	public List<Room> all(@RequestParam(required = false) String city, @RequestParam(required = false) String date,
 			@RequestParam(required = false) Integer zipCode, @RequestParam(required = false) Double lat,
-			@RequestParam(required = false) Double lon) {
-		return roomService.findAll(city, zipCode, date, lat, lon);
+			@RequestParam(required = false) Double lon, @RequestParam(required = false) String type,
+			@RequestParam(required = false) String equipment, @RequestParam(required = false) String event) {
+		SearchRoomParams params = new SearchRoomParams(city, zipCode, date, lat, lon, type, equipment, event);
+		return roomService.findAll(params);
 	}
 
 	@GetMapping("/users/{id}")
@@ -43,22 +54,6 @@ public class RoomController {
 	public Room findById(@PathVariable int id) {
 		return roomService.findById(id);
 	}
-
-	@GetMapping("/types")
-	public List<RoomType> allTypes() {
-		return roomService.allTypes();
-	}
-
-	@GetMapping("/types/{type}")
-	public List<Room> findByType(@PathVariable String type) { return roomService.findByType(type); }
-
-	@GetMapping("/equipments")
-	public List<Equipment> allEquipments() {
-		return roomService.allEquipments();
-	}
-
-	@GetMapping("/equipments/{equipment}")
-	public List<Room> findByEquipment(@PathVariable String equipment) { return roomService.findByEquipment(equipment); }
 
 	@PutMapping
 	public Room updateRoom(@RequestBody Room room, @AuthenticationPrincipal User user) {

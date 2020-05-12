@@ -14,16 +14,19 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SelectBeforeUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +37,8 @@ import project.models.Role;
 @Setter
 @Entity
 @NoArgsConstructor
+@DynamicUpdate
+@SelectBeforeUpdate
 public class User implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
@@ -45,11 +50,13 @@ public class User implements UserDetails {
 	private String firstname;
 
 	private String lastname;
+	
+	private String phoneNumber;
 
 	@OneToOne(cascade = CascadeType.ALL)
 	private Address address;
 
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonBackReference
 	private String password;
 
 	private boolean accountNonLocked = true;
@@ -62,6 +69,10 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Set<Role> roles = Set.of(Role.USER);
 
+	@ManyToMany
+	@JsonIgnoreProperties("owner")
+	private Set<Room> favorites = new HashSet<Room>();
+	
 	@JsonIgnoreProperties("owner")
 	@OneToMany(mappedBy = "owner")
 	private Set<Room> rooms = new HashSet<Room>();
@@ -112,5 +123,8 @@ public class User implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+
+	
+	
 
 }

@@ -1,5 +1,8 @@
 package project.services;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -49,7 +52,7 @@ public class UserService implements UserDetailsService {
 	 * @throws BadCredentialsException si l'authentification a échouée
 	 */
 	public String authenticate(User user) throws BadCredentialsException {
-		User authenticatedUser = null;
+		User authenticatedUser;
 		try {
 			authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 			authenticatedUser = findByEmail(user.getEmail());
@@ -107,7 +110,24 @@ public class UserService implements UserDetailsService {
 	 */
 	public User update(User user, User loggedUser) throws ForbiddenException {
 		if(loggedUser.getId() != user.getId()) throw new ForbiddenException();
-		return userRepository.save(user);
+		User dbUser = userRepository.findById(user.getId()).get();
+		List<Field> fields =List.of(dbUser.getClass().getDeclaredFields());
+		fields.forEach(f -> {
+	
+			try {
+				f.setAccessible(true);
+				if(f.get(user) != null &&  !f.getType().getName().equals("java.util.Set")) {
+					System.out.println(f.getType().getName());
+					f.set(dbUser, f.get(user));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+		
+		dbUser.setFavorites(user.getFavorites());
+		return userRepository.save(dbUser);
+		
 	}
 
 	/**
