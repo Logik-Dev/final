@@ -12,7 +12,7 @@ import project.models.entities.EventType;
 import project.services.EventTypeService;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/events")
 @CrossOrigin("http://localhost:4200")
 public class EventTypeController {
 	
