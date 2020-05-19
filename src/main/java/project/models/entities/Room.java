@@ -17,9 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PostLoad;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import javax.persistence.PreRemove;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -80,7 +78,6 @@ public class Room {
 	
 	@JsonIgnoreProperties({"room", "client"})
 	@OneToMany(mappedBy = "room")
-	@OnDelete(action = OnDeleteAction.NO_ACTION)
 	private Set<Booking> bookings = new HashSet<Booking>();
 	
 	@JsonIgnoreProperties("room")
@@ -95,6 +92,13 @@ public class Room {
 				this.rating += c.getRating();
 			}
 			rating /= comments.size() + 1;
+		}
+	}
+	
+	@PreRemove
+	public void preRemove() {
+		for(Booking booking: bookings) {
+			booking.setRoom(null);
 		}
 	}
 

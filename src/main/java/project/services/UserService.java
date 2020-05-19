@@ -116,8 +116,8 @@ public class UserService implements UserDetailsService {
 	
 			try {
 				f.setAccessible(true);
-				if(f.get(user) != null &&  !f.getType().getName().equals("java.util.Set")) {
-					System.out.println(f.getType().getName());
+				if(f.get(user) != null &&  !f.getType().getName().equals("java.util.Set") && !f.getName().equals("serialVersionUID")) {
+					System.out.println(f.getName());
 					f.set(dbUser, f.get(user));
 				}
 			} catch (Exception e) {

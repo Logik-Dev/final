@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PreRemove;
 
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SelectBeforeUpdate;
@@ -41,7 +42,7 @@ import project.models.Role;
 @SelectBeforeUpdate
 public class User implements UserDetails {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3366338174920579829L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,12 +70,12 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Set<Role> roles = Set.of(Role.USER);
 
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JsonIgnoreProperties("owner")
 	private Set<Room> favorites = new HashSet<Room>();
 	
 	@JsonIgnoreProperties("owner")
-	@OneToMany(mappedBy = "owner")
+	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
 	private Set<Room> rooms = new HashSet<Room>();
 
 	@JsonIgnoreProperties("client")
@@ -82,7 +83,7 @@ public class User implements UserDetails {
 	private Set<Booking> bookings = new HashSet<Booking>();
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "author")
+	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
 	private Set<Comment> comments = new HashSet<Comment>();
 
 	@JsonIgnore
@@ -124,6 +125,12 @@ public class User implements UserDetails {
 		return true;
 	}
 
+	@PreRemove
+	public void preRemove() {
+		for(Booking booking: bookings) {
+			booking.setClient(null);
+		}
+	}
 	
 	
 
