@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import project.exceptions.BadCredentialsException;
 import project.exceptions.ConflictException;
 import project.exceptions.ForbiddenException;
 import project.exceptions.UserNotFoundException;
@@ -57,7 +57,7 @@ public class UserService implements UserDetailsService {
 			authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
 			authenticatedUser = findByEmail(user.getEmail());
 		} catch (RuntimeException e) {
-			throw new BadCredentialsException("Identifiants invalides");
+			throw new BadCredentialsException();
 		}
 		return jwtUtil.generateToken(authenticatedUser);
 	}
