@@ -39,6 +39,7 @@ public class Room {
 	
 	private double size;
 	
+	@Column(unique = true) 
 	private String name;
 	
 	@OneToOne(cascade = CascadeType.ALL)
@@ -61,10 +62,7 @@ public class Room {
 	
 	@ManyToMany(cascade = CascadeType.PERSIST)
 	private Set<RoomEquipment> equipments = new HashSet<RoomEquipment>();
-	
-	@ManyToMany(cascade = CascadeType.PERSIST)
-	private Set<RoomEquipment> customEquipments = new HashSet<RoomEquipment>();
-	
+
 	@Column(columnDefinition = "tinyint default 5")
 	private int rating = 5;
 	
@@ -101,6 +99,30 @@ public class Room {
 			booking.setRoom(null);
 		}
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + id;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Room other = (Room) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+
 
 	
 

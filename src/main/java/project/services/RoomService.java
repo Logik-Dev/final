@@ -12,7 +12,9 @@ import project.exceptions.ForbiddenException;
 import project.exceptions.RoomNotFoundException;
 import project.models.SearchRoomParams;
 import project.models.entities.Room;
+import project.models.entities.RoomEquipment;
 import project.models.entities.User;
+import project.repositories.EquipmentRepository;
 import project.repositories.RoomRepository;
 import project.utils.DateUtils;
 
@@ -21,6 +23,9 @@ public class RoomService {
 
 	@Autowired
 	private RoomRepository roomRepository;
+
+	@Autowired
+	private EquipmentRepository equipmentRepository;
 
 	/**
 	 * Enregistrer une salle
@@ -32,8 +37,13 @@ public class RoomService {
 	 *                            propriétaire de la salle
 	 */
 	public Room create(Room room, User user) throws ForbiddenException {
-		if (user == null || user.getId() != room.getOwner().getId())
-			throw new ForbiddenException();
+
+		for (RoomEquipment e : room.getEquipments()) {
+			if (!equipmentRepository.existsById(e.getEquipment().getId())) {
+				equipmentRepository.save(e.getEquipment());
+			}
+		}
+
 		return roomRepository.save(room);
 	}
 
@@ -48,31 +58,33 @@ public class RoomService {
 		List<Room> rooms = new ArrayList<>();
 		if (params.getLat() != null && params.getLon() != null) {
 			rooms = roomRepository.findByCoordinates(params.getLat(), params.getLon());
-		}
-		else if(params.getType() != null) {
-			rooms = roomRepository.findByType_id(params.getType());
-		}
-		else if(params.getEquipment() != null) {
-			rooms = roomRepository.findByEquipments_equipment_id(params.getEquipment());
-		}
-		else if(params.getEvent() != null) {
-			rooms = roomRepository.findByEventTypes_id(params.getEvent());
-		}
-		else if (params.getCity() != null && params.getZipCode() != null) {
+		} else if (params.getType() != null) {
+			rooms = roomRepository.findByTypeId(params.getType());
+		} else if (params.getEquipment() != null) {
+			rooms = roomRepository.findByEquipmentsEquipmentId(params.getEquipment());
+		} else if (params.getEvent() != null) {
+			rooms = roomRepository.findByEventTypesId(params.getEvent());
+		} else if (params.getCity() != null && params.getZipCode() != null) {
 			if (params.getDate() != null) {
-				String day = DateUtils.parseDate(params.getDate()).getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE);
-				rooms = roomRepository.findByAvailableDaysAndAddress_cityAndAddress_zipCode(day, params.getCity(), params.getZipCode());
+				String day = DateUtils.parseDate(params.getDate()).getDayOfWeek().getDisplayName(TextStyle.FULL,
+						Locale.FRANCE);
+				rooms = roomRepository.findByAvailableDaysAndAddressCityAndAddressZipCode(day, params.getCity(),
+						params.getZipCode());
 
 			} else {
-				rooms = roomRepository.findByAddress_cityAndAddress_zipCode(params.getCity(), params.getZipCode());
+				rooms = roomRepository.findByAddressCityAndAddressZipCode(params.getCity(), params.getZipCode());
 			}
 		} else {
 			rooms = roomRepository.findAll();
 		}
-		if(rooms.isEmpty()) throw new RoomNotFoundException();
+		if (rooms.isEmpty())
+			throw new RoomNotFoundException();
 		return rooms;
 	}
-
+	
+	public List<Room> search(String query){
+		return roomRepository.findDistinctRoomsByNameContainingOrTypeIdOrEventTypesIdAllIgnoreCase(query, query, query);
+	}
 	/**
 	 * Rechercher une salle par son identifiant
 	 * 
@@ -92,7 +104,7 @@ public class RoomService {
 	 * @throws RoomNotFoundException si la liste est vide
 	 */
 	public List<Room> findByUserId(int id) throws RoomNotFoundException {
-		List<Room> rooms = this.roomRepository.findByOwner_id(id);
+		List<Room> rooms = this.roomRepository.findByOwnerId(id);
 		if (rooms.isEmpty())
 			throw new RoomNotFoundException();
 		return rooms;
@@ -117,12 +129,13 @@ public class RoomService {
 	 * 
 	 * @param id l'identifiant de la salle à supprimer
 	 * @throws RoomNotFoundException si la salle est introuvable
-	 * @throws ForbiddenException si l'id de l'utilisateur n'est pas celui du propriétaire
+	 * @throws ForbiddenException    si l'id de l'utilisateur n'est pas celui du
+	 *                               propriétaire
 	 */
 	public void delete(int id, User user) throws RoomNotFoundException, ForbiddenException {
 		if (!roomRepository.existsById(id))
 			throw new RoomNotFoundException();
-		if(roomRepository.findById(id).get().getOwner().getId() != user.getId()){
+		if (roomRepository.findById(id).get().getOwner().getId() != user.getId()) {
 			throw new ForbiddenException();
 		}
 		roomRepository.deleteById(id);

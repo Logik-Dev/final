@@ -15,6 +15,6 @@ public class EquipmentService {
 	private EquipmentRepository equipmentRepository;
 	
 	public List<Equipment> findAll() {
-		return equipmentRepository.findAll();
+		return equipmentRepository.findByCustom(false);
 	}
 }

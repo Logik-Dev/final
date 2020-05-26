@@ -70,7 +70,7 @@ public class User implements UserDetails {
 	@Enumerated(EnumType.STRING)
 	private Set<Role> roles = Set.of(Role.USER);
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JsonIgnoreProperties("owner")
 	private Set<Room> favorites = new HashSet<Room>();
 	

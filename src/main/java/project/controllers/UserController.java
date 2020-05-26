@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import project.models.entities.Room;
 import project.models.entities.User;
 import project.services.UserService;
 
@@ -55,6 +56,11 @@ public class UserController {
 	@PutMapping
 	public User update(@RequestBody User user, @AuthenticationPrincipal User loggedUser) {
 		return userService.update(user, loggedUser);
+	}
+	
+	@PutMapping("/favorites")
+	public User favorites(@RequestBody Room room, @AuthenticationPrincipal User loggedUser) {
+		return userService.addRoomToFavorites(loggedUser, room);
 	}
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)

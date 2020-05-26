@@ -45,6 +45,11 @@ public class RoomController {
 		return roomService.findAll(params);
 	}
 
+	@GetMapping("/search")
+	public List<Room> search(@RequestParam String query) {
+		return roomService.search(query);
+	}
+
 	@GetMapping("/users/{id}")
 	public List<Room> allByUser(@PathVariable int id) {
 		return roomService.findByUserId(id);
