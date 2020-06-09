@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import project.exceptions.ForbiddenException;
 import project.services.JwtService;
 import project.services.UserService;
 
@@ -27,9 +28,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtService jwtUtil;
 
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+			throws ServletException, IOException, ForbiddenException {
 		try {
 			final String authorizationHeader = request.getHeader("Authorization");
 			String email = null;
@@ -56,8 +58,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 					SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 				}
 			}
-		} catch (RuntimeException e) {;
-			System.out.println(e.getMessage());
+		} catch (Exception e) {;
+			System.out.println("Authentification requise");
 		} finally {
 			filterChain.doFilter(request, response);
 		}

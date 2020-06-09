@@ -11,9 +11,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import project.services.UserService;
+import project.utils.CustomAccessDeniedHandler;
 
 @EnableWebSecurity
 public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
@@ -34,6 +36,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		http
 			.cors().and()
 			.csrf().disable().authorizeRequests()
+				.antMatchers("/deny").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/rooms/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/equipments/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/types/**").permitAll()
@@ -45,8 +48,14 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/parents/**").permitAll()
 				.antMatchers("/api/admin/**").hasAuthority("ADMIN")
 				.anyRequest().authenticated()
-				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and().exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler()).authenticationEntryPoint(new CustomAccessDeniedHandler());
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+	}
+	
+	@Bean
+	public AccessDeniedHandler accessDeniedHandler(){
+	    return new CustomAccessDeniedHandler();
 	}
 	
 	@Override

@@ -37,13 +37,15 @@ public class RoomService {
 	 *                            propriétaire de la salle
 	 */
 	public Room create(Room room, User user) throws ForbiddenException {
-
+		if(user == null) throw new ForbiddenException();
 		for (RoomEquipment e : room.getEquipments()) {
 			if (!equipmentRepository.existsById(e.getEquipment().getId())) {
 				equipmentRepository.save(e.getEquipment());
 			}
 		}
-
+		User u = new User();
+		u.setId(user.getId());
+		room.setOwner(u);
 		return roomRepository.save(room);
 	}
 
@@ -85,6 +87,10 @@ public class RoomService {
 	public List<Room> search(String query){
 		return roomRepository.findDistinctRoomsByNameContainingOrTypeIdOrEventTypesIdAllIgnoreCase(query, query, query);
 	}
+	
+	public boolean exists(String name) {
+		return roomRepository.existsByNameIgnoreCase(name);
+	}
 	/**
 	 * Rechercher une salle par son identifiant
 	 * 
@@ -96,6 +102,8 @@ public class RoomService {
 		return roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 	}
 
+	
+	
 	/**
 	 * Obtenir les salles d'un utilisateur
 	 * 

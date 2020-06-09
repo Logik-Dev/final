@@ -147,6 +147,7 @@ public class DataInitializer {
 			dancing.setAvailableDays(Set.of("vendredi", "lundi", "samedi", "dimanche"));
 			dancing.setEventTypes(Set.of(repet));
 			dancing.setMaxVolume(Volume.MOYEN);
+			dancing.setSize(80);
 			Set<RoomEquipment> dancingEquipments = Set.of(new RoomEquipment(piste, 1),
 					new RoomEquipment(chaise, 6), new RoomEquipment(enceinte, 2),
 					new RoomEquipment(wifi, 1));

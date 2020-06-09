@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import project.exceptions.BadCredentialsException;
 import project.exceptions.ConflictException;
+import project.exceptions.EmailExistsException;
 import project.exceptions.ForbiddenException;
 import project.exceptions.UserNotFoundException;
 import project.models.entities.Room;
@@ -41,7 +42,7 @@ public class UserService implements UserDetailsService {
 	 */
 	public User create(User user) throws ConflictException {
 		if (userRepository.existsByEmail(user.getEmail()))
-			throw new ConflictException();
+			throw new EmailExistsException();
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		return userRepository.save(user);
 	}
@@ -75,7 +76,7 @@ public class UserService implements UserDetailsService {
 	 *                               l'utilisateur
 	 */
 	public User findById(int id, User user) throws UserNotFoundException, ForbiddenException {
-		if (user.getId() != id)
+		if (user == null || user.getId() != id)
 			throw new ForbiddenException();
 		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 	}

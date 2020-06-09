@@ -20,12 +20,14 @@ public interface RoomRepository extends JpaRepository<Room, Integer> {
 	
 	List<Room> findByEventTypesId(String event);
 
-	List<Room> findByTypeId(@Param("type") String type);
+	List<Room> findByTypeId(String type);
 	
 	List<Room> findDistinctRoomsByNameContainingOrTypeIdOrEventTypesIdAllIgnoreCase(String name, String type, String eventType);
 
+	Boolean existsByNameIgnoreCase(String name);
+	
 	@Query("SELECT r FROM Room r WHERE (r.address.latitude < :lat + 0.03 AND r.address.latitude > :lat - 0.03) "
 			+ "AND (r.address.longitude < :lon + 0.03 AND r.address.longitude > :lon - 0.03)")
 	List<Room> findByCoordinates(@Param("lat") double lat, @Param("lon") double lon);
-
+	
 }

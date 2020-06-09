@@ -1,9 +1,11 @@
 package project.controllers;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,12 +39,16 @@ public class RoomController {
 	}
 
 	@GetMapping
-	public List<Room> all(@RequestParam(required = false) String city, @RequestParam(required = false) String date,
+	public ResponseEntity<?> all(@RequestParam(required = false) String name,
+			@RequestParam(required = false) String city, @RequestParam(required = false) String date,
 			@RequestParam(required = false) Integer zipCode, @RequestParam(required = false) Double lat,
 			@RequestParam(required = false) Double lon, @RequestParam(required = false) String type,
 			@RequestParam(required = false) String equipment, @RequestParam(required = false) String event) {
+		if (name != null) {
+			return ResponseEntity.ok(Collections.singletonMap("result", roomService.exists(name)));
+		}
 		SearchRoomParams params = new SearchRoomParams(city, zipCode, date, lat, lon, type, equipment, event);
-		return roomService.findAll(params);
+		return ResponseEntity.ok(roomService.findAll(params));
 	}
 
 	@GetMapping("/search")
