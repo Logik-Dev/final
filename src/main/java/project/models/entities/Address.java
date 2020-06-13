@@ -6,7 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,7 @@ public class Address {
 	
 	private int zipCode;
 	
-	@JsonIgnore
+	@JsonIgnoreProperties("address")
 	@OneToOne(mappedBy = "address")
 	private Room room;
 	

@@ -59,7 +59,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				}
 			}
 		} catch (Exception e) {;
-			System.out.println("Authentification requise");
+			throw new ForbiddenException();
 		} finally {
 			filterChain.doFilter(request, response);
 		}

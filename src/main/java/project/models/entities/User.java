@@ -16,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.PreRemove;
 
 import org.hibernate.annotations.DynamicUpdate;
@@ -42,7 +41,7 @@ import project.models.Role;
 @SelectBeforeUpdate
 public class User implements UserDetails {
 
-	private static final long serialVersionUID = -3366338174920579829L;
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,9 +52,6 @@ public class User implements UserDetails {
 	private String lastname;
 	
 	private String phoneNumber;
-
-	@OneToOne(cascade = CascadeType.ALL)
-	private Address address;
 
 	@JsonBackReference
 	private String password;

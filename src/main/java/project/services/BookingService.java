@@ -1,14 +1,19 @@
 package project.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import project.exceptions.BookingNotFoundException;
 import project.exceptions.DayUnavailableException;
+import project.exceptions.PriceNotMatchingException;
 import project.exceptions.UnavailableException;
 import project.models.entities.Booking;
 import project.models.entities.Room;
@@ -24,6 +29,12 @@ public class BookingService {
 	@Autowired
 	private RoomService roomService;
 
+	@Value("${COMMISSION}")
+	private double COMMISSION;
+	
+	@Value("${TVA}")
+	private double TVA;
+	
 	/**
 	 * Enregistrer une réservation
 	 * 
@@ -31,9 +42,12 @@ public class BookingService {
 	 * @return un objet de type Booking avec un identifiant unique
 	 * @throws UnavailableException si la salle est indisponible
 	 */
-	public Booking create(Booking booking) throws UnavailableException {
+	public Booking create(Booking booking) throws UnavailableException, PriceNotMatchingException {
 		if (!isBookable(booking)) {
 			throw new UnavailableException();
+		}
+		if (!priceMatch(booking)) {
+			throw new PriceNotMatchingException();
 		}
 		return bookingRepository.save(booking);
 	}
@@ -87,6 +101,18 @@ public class BookingService {
 			}
 		}
 		return true;
+	}
+	
+	private boolean priceMatch(Booking booking) {
+		Room room = roomService.findById(booking.getRoom().getId());
+		TimeSlot firstSlot = booking.getSlots().iterator().next();
+		long totalHours = (Duration.between(firstSlot.getStart(), firstSlot.getEnd()).toHours()) * booking.getSlots().size();
+		double price = totalHours * room.getPrice();
+		price += price / 100 * COMMISSION;
+		price += price / 100 * TVA;
+		price = BigDecimal.valueOf(price).setScale(1, RoundingMode.FLOOR).doubleValue();
+		System.out.println("requested price = " + booking.getPrice() + ", calculated price = " + price);
+		return booking.getPrice() == price;
 	}
 
 }

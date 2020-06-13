@@ -36,7 +36,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 		http
 			.cors().and()
 			.csrf().disable().authorizeRequests()
-				.antMatchers("/deny").permitAll()
+				.antMatchers(HttpMethod.GET, "/deny").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/rooms/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/equipments/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/types/**").permitAll()
@@ -45,11 +45,11 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.POST, "/api/users/login").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/users").permitAll()
 				.regexMatchers(HttpMethod.GET, "/api/users\\?.+").permitAll()
-				.antMatchers("/api/parents/**").permitAll()
 				.antMatchers("/api/admin/**").hasAuthority("ADMIN")
 				.anyRequest().authenticated()
 				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.and().exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler()).authenticationEntryPoint(new CustomAccessDeniedHandler());
+				.and().exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
+				.authenticationEntryPoint(new CustomAccessDeniedHandler());
 		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	

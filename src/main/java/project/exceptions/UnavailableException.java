@@ -1,11 +1,11 @@
 package project.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(code= HttpStatus.CONFLICT, reason = "Cette date est déjà réservée")
-public class UnavailableException extends RuntimeException {
+public class UnavailableException extends ConflictException {
 
 	private static final long serialVersionUID = 1L;
+	
+	public UnavailableException() {
+		super("La salle n'est pas disponible");
+	}
 
 }

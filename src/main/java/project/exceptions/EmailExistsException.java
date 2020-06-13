@@ -1,6 +1,6 @@
 package project.exceptions;
 
-public class EmailExistsException extends ConflictException{
+public class EmailExistsException extends ConflictException {
 
 	private static final long serialVersionUID = 1L;
 	

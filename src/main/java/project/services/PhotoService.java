@@ -43,7 +43,7 @@ public class PhotoService {
 				photo.setFile(file.getBytes());
 				photoRepository.save(photo);
 			} catch (IOException e) {
-				throw new InternalException();
+				throw new InternalException("Impossible d'enregistrer les photos");
 			}
 		}
 	}
