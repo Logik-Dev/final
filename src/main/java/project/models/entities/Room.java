@@ -55,20 +55,20 @@ public class Room {
 	
 	@ManyToMany
 	@JsonIgnoreProperties("rooms")
-	private Set<EventType> eventTypes = new HashSet<EventType>();
+	private Set<EventType> eventTypes = new HashSet<>();
 		
 	@OneToOne
 	private RoomType type;
 	
 	@ManyToMany(cascade = CascadeType.PERSIST)
-	private Set<RoomEquipment> equipments = new HashSet<RoomEquipment>();
+	private Set<RoomEquipment> equipments = new HashSet<>();
 
 	@Column(columnDefinition = "tinyint default 5")
 	private int rating = 5;
 	
 	@JsonIgnoreProperties("room")
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
-	private Set<Photo> photos = new HashSet<Photo>();
+	private Set<Photo> photos = new HashSet<>();
 	
 	@JsonIgnoreProperties({"rooms", "bookings"})
 	@ManyToOne
@@ -76,16 +76,16 @@ public class Room {
 	
 	@JsonIgnoreProperties({"room", "client"})
 	@OneToMany(mappedBy = "room")
-	private Set<Booking> bookings = new HashSet<Booking>();
+	private Set<Booking> bookings = new HashSet<>();
 	
 	@JsonIgnoreProperties("room")
 	@OneToMany(mappedBy = "room")
-	private Set<Comment> comments = new HashSet<Comment>();
+	private Set<Comment> comments = new HashSet<>();
 	
 	@PostLoad
 	private void calculateRating() {
 		rating = 5;
-		if(comments.size() > 0) {
+		if(!comments.isEmpty()) {
 			for(Comment c: comments) {
 				this.rating += c.getRating();
 			}
@@ -117,9 +117,7 @@ public class Room {
 		if (getClass() != obj.getClass())
 			return false;
 		Room other = (Room) obj;
-		if (id != other.id)
-			return false;
-		return true;
+		return id == other.id;
 	}
 
 

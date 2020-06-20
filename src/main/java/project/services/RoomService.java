@@ -1,7 +1,6 @@
 package project.services;
 
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,7 +35,7 @@ public class RoomService {
 	 * @throws ForbiddenException si l'id de l'utilisateur n'est pas celui du
 	 *                            propriétaire de la salle
 	 */
-	public Room create(Room room, User user) throws ForbiddenException {
+	public Room create(Room room, User user){
 		if(user == null) throw new ForbiddenException();
 		for (RoomEquipment e : room.getEquipments()) {
 			if (!equipmentRepository.existsById(e.getEquipment().getId())) {
@@ -56,8 +55,8 @@ public class RoomService {
 	 * @return la liste des salles correspondant aux critères
 	 * @throws RoomNotFoundException si aucune salle n'est trouvée
 	 */
-	public List<Room> findAll(SearchRoomParams params) throws RoomNotFoundException {
-		List<Room> rooms = new ArrayList<>();
+	public List<Room> findAll(SearchRoomParams params){
+		List<Room> rooms;
 		if (params.getLat() != null && params.getLon() != null) {
 			rooms = roomRepository.findByCoordinates(params.getLat(), params.getLon());
 		} else if (params.getType() != null) {
@@ -98,8 +97,8 @@ public class RoomService {
 	 * @return la salle recherchée
 	 * @throws RoomNotFoundException si la salle est introuvable
 	 */
-	public Room findById(int id) throws RoomNotFoundException {
-		return roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+	public Room findById(int id){
+		return roomRepository.findById(id).orElseThrow(RoomNotFoundException::new);
 	}
 
 	
@@ -111,7 +110,7 @@ public class RoomService {
 	 * @return la liste des salles de l'utilisateur
 	 * @throws RoomNotFoundException si la liste est vide
 	 */
-	public List<Room> findByUserId(int id) throws RoomNotFoundException {
+	public List<Room> findByUserId(int id){
 		List<Room> rooms = this.roomRepository.findByOwnerId(id);
 		if (rooms.isEmpty())
 			throw new RoomNotFoundException();
@@ -126,7 +125,7 @@ public class RoomService {
 	 * @return la salle modifée
 	 * @throws ForbiddenException si l'utilisateur n'est pas le propriétaire
 	 */
-	public Room update(Room room, User user) throws ForbiddenException {
+	public Room update(Room room, User user){
 		if (user == null || user.getId() != room.getOwner().getId())
 			throw new ForbiddenException();
 		return roomRepository.save(room);
@@ -140,10 +139,9 @@ public class RoomService {
 	 * @throws ForbiddenException    si l'id de l'utilisateur n'est pas celui du
 	 *                               propriétaire
 	 */
-	public void delete(int id, User user) throws RoomNotFoundException, ForbiddenException {
-		if (!roomRepository.existsById(id))
-			throw new RoomNotFoundException();
-		if (roomRepository.findById(id).get().getOwner().getId() != user.getId()) {
+	public void delete(int id, User user){
+		Room room = roomRepository.findById(id).orElseThrow(RoomNotFoundException::new);
+		if (room.getOwner().getId() != user.getId()) {
 			throw new ForbiddenException();
 		}
 		roomRepository.deleteById(id);

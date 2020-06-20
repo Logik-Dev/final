@@ -38,7 +38,7 @@ public class CommentService {
 	 * @return un objet de type Comment contenant un identifiant unique
 	 * @throws ForbiddenException si l'utilisateur n'est pas autorisé à commenter 
 	 */
-	public Comment create(Comment comment, User user) throws ForbiddenException {
+	public Comment create(Comment comment, User user){
 		if (comment.getAuthor().getId() != user.getId() || !canComment(comment)) {
 			throw new ForbiddenException();
 		}
@@ -52,7 +52,7 @@ public class CommentService {
 	 * @return true si l'utilisateur est autorisé ou false sinon
 	 * @throws CommentExistsException si l'auteur a déjà commenté la salle
 	 */
-	private boolean canComment(Comment comment) throws CommentExistsException {
+	private boolean canComment(Comment comment){
 		int clientId = comment.getAuthor().getId();
 		int roomId = comment.getRoom().getId();
 		if (commentRepository.hasComment(roomId, clientId))

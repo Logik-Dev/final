@@ -68,19 +68,19 @@ public class User implements UserDetails {
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
 	@JsonIgnoreProperties("owner")
-	private Set<Room> favorites = new HashSet<Room>();
+	private Set<Room> favorites = new HashSet<>();
 	
 	@JsonIgnoreProperties("owner")
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-	private Set<Room> rooms = new HashSet<Room>();
+	private Set<Room> rooms = new HashSet<>();
 
 	@JsonIgnoreProperties("client")
 	@OneToMany(mappedBy = "client")
-	private Set<Booking> bookings = new HashSet<Booking>();
+	private Set<Booking> bookings = new HashSet<>();
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
-	private Set<Comment> comments = new HashSet<Comment>();
+	private Set<Comment> comments = new HashSet<>();
 
 	@JsonIgnore
 	@Override

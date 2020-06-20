@@ -24,7 +24,7 @@ public class EventType {
 	
 	@ManyToMany
 	@JsonIgnoreProperties("eventTypes")
-	private Set<Room> rooms = new HashSet<Room>();
+	private Set<Room> rooms = new HashSet<>();
 
 	public EventType(String id) {
 		this.id = id;

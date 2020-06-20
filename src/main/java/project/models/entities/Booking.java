@@ -28,7 +28,7 @@ public class Booking {
 	private int id;
 
 	@ManyToMany(cascade = CascadeType.PERSIST)
-	private Set<TimeSlot> slots = new HashSet<TimeSlot>();
+	private Set<TimeSlot> slots = new HashSet<>();
 
 	private double price;
 

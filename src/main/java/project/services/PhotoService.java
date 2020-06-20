@@ -32,7 +32,7 @@ public class PhotoService {
 	 * @throws ForbiddenException si l'utilisateur n'est pas le propriétaire
 	 * @throws InternalException  si une photo n'a pas pu être enregistrée
 	 */
-	public void create(MultipartFile files[], int roomId, User user) throws ForbiddenException, InternalException {
+	public void create(MultipartFile[] files, int roomId, User user){
 		Room room = roomService.findById(roomId);
 		if (room.getOwner().getId() != user.getId())
 			throw new ForbiddenException();
@@ -55,8 +55,8 @@ public class PhotoService {
 	 * @return le fichier photo sous forme de byte[]
 	 * @throws PhotoNotFoundException si la photo est introuvable
 	 */
-	public byte[] findById(int id) throws PhotoNotFoundException {
-		Photo photo = photoRepository.findById(id).orElseThrow(() -> new PhotoNotFoundException());
+	public byte[] findById(int id){
+		Photo photo = photoRepository.findById(id).orElseThrow(PhotoNotFoundException::new);
 		return photo.getFile();
 	}
 }

@@ -39,7 +39,7 @@ public class RoomController {
 	}
 
 	@GetMapping
-	public ResponseEntity<?> all(@RequestParam(required = false) String name,
+	public ResponseEntity<Object> all(@RequestParam(required = false) String name,
 			@RequestParam(required = false) String city, @RequestParam(required = false) String date,
 			@RequestParam(required = false) Integer zipCode, @RequestParam(required = false) Double lat,
 			@RequestParam(required = false) Double lon, @RequestParam(required = false) String type,

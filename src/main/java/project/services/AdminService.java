@@ -15,7 +15,7 @@ public class AdminService {
 	
 	public User update(int userId, boolean locked) {
 		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new UserNotFoundException());
+				.orElseThrow(UserNotFoundException::new);
 		user.setAccountNonLocked(!locked);
 		return userRepository.save(user);
 	}

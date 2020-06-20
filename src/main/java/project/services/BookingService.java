@@ -42,7 +42,7 @@ public class BookingService {
 	 * @return un objet de type Booking avec un identifiant unique
 	 * @throws UnavailableException si la salle est indisponible
 	 */
-	public Booking create(Booking booking) throws UnavailableException, PriceNotMatchingException {
+	public Booking create(Booking booking){
 		if (!isBookable(booking)) {
 			throw new UnavailableException();
 		}
@@ -58,9 +58,8 @@ public class BookingService {
 	 * @return un objet de type Booking
 	 * @throws BookingNotFoundException si la réservation est introuvable
 	 */
-	public Booking findById(int id) throws BookingNotFoundException {
-		Booking booking = bookingRepository.findById(id).orElseThrow(() -> new BookingNotFoundException());
-		return booking;
+	public Booking findById(int id) {
+		return bookingRepository.findById(id).orElseThrow(BookingNotFoundException::new);
 	}
 	
 	/**
@@ -69,7 +68,7 @@ public class BookingService {
 	 * @return un objet de type List<Booking> contenant les réservations
 	 * @throws BookingNotFoundException si il n'y a aucune réservation
 	 */
-	public List<Booking> findByRoom(int roomId) throws BookingNotFoundException {
+	public List<Booking> findByRoom(int roomId){
 		List<Booking> bookings = bookingRepository.findByRoomId(roomId);
 		if (bookings.isEmpty())
 			throw new BookingNotFoundException();
@@ -82,7 +81,7 @@ public class BookingService {
 	 * @return true si la réservation est possible ou false sinon
 	 * @throws DayUnavailableException si le jour n'est pas réservable
 	 */
-	private boolean isBookable(Booking booking) throws DayUnavailableException {
+	private boolean isBookable(Booking booking){
 		Room room = roomService.findById(booking.getRoom().getId());
 		for (TimeSlot slot : booking.getSlots()) {
 			String day = slot.getStart().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRANCE);
@@ -111,7 +110,6 @@ public class BookingService {
 		price += price / 100 * COMMISSION;
 		price += price / 100 * TVA;
 		price = BigDecimal.valueOf(price).setScale(1, RoundingMode.FLOOR).doubleValue();
-		System.out.println("requested price = " + booking.getPrice() + ", calculated price = " + price);
 		return booking.getPrice() == price;
 	}
 

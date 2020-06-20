@@ -40,7 +40,7 @@ public class UserService implements UserDetailsService {
 	 * @return l'objet de type User contenant un identifiant unique
 	 * @throws ConflictException si l'adresse mail est déja utilisée
 	 */
-	public User create(User user) throws ConflictException {
+	public User create(User user){
 		if (userRepository.existsByEmail(user.getEmail()))
 			throw new EmailExistsException();
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -54,7 +54,7 @@ public class UserService implements UserDetailsService {
 	 * @return un token de type String
 	 * @throws BadCredentialsException si l'authentification a échouée
 	 */
-	public String authenticate(User user) throws BadCredentialsException {
+	public String authenticate(User user){
 		User authenticatedUser;
 		try {
 			authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
@@ -75,10 +75,10 @@ public class UserService implements UserDetailsService {
 	 * @throws ForbiddenException    si l'id ne correspond pas à celui de
 	 *                               l'utilisateur
 	 */
-	public User findById(int id, User user) throws UserNotFoundException, ForbiddenException {
+	public User findById(int id, User user){
 		if (user == null || user.getId() != id)
 			throw new ForbiddenException();
-		return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+		return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
 	}
 
 	/**
@@ -88,9 +88,8 @@ public class UserService implements UserDetailsService {
 	 * @return un objet de type User
 	 * @throws UserNotFoundException si l'utilisateur est introuvable
 	 */
-	private User findByEmail(String email) throws UserNotFoundException {
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException());
-		return user;
+	private User findByEmail(String email){
+		return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
 	}
 
 	@Override
@@ -117,10 +116,10 @@ public class UserService implements UserDetailsService {
 	 * @throws ForbiddenException si l'id de l'objet ne correspond pas à l'id de
 	 *                            l'utilisateur connecté
 	 */
-	public User update(User user, User loggedUser) throws ForbiddenException {
-		if (loggedUser.getId() != user.getId())
+	public User update(User user, User loggedUser){
+		if (loggedUser == null || loggedUser.getId() != user.getId())
 			throw new ForbiddenException();
-		User dbUser = userRepository.findById(user.getId()).orElseThrow(() -> new UserNotFoundException());
+		User dbUser = userRepository.findById(user.getId()).orElseThrow(UserNotFoundException::new);
 
 		if (!StringUtils.isBlank(user.getFirstname()))
 			dbUser.setFirstname(user.getFirstname());
@@ -135,7 +134,7 @@ public class UserService implements UserDetailsService {
 	}
 
 	public User addRoomToFavorites(User loggedUser, Room room) {
-		User dbUser = userRepository.findById(loggedUser.getId()).orElseThrow(() -> new UserNotFoundException());
+		User dbUser = userRepository.findById(loggedUser.getId()).orElseThrow(UserNotFoundException::new);
 		if(dbUser.getFavorites().contains(room)) {
 			dbUser.getFavorites().remove(room);
 		} else {
@@ -153,7 +152,7 @@ public class UserService implements UserDetailsService {
 	 *                               l'utilisateur connecté
 	 * @throws UserNotFoundException si l'utilisateur à supprimer est introuvable
 	 */
-	public void delete(int id, User loggedUser) throws ForbiddenException, UserNotFoundException {
+	public void delete(int id, User loggedUser){
 		if (loggedUser.getId() != id)
 			throw new ForbiddenException();
 		if (!userRepository.existsById(id))
